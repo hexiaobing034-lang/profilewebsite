@@ -20,3 +20,6 @@ Thumbs.db
 # 临时文件
 *.tmp
 *.temp
+
+# 视频文件（太大，不推送到GitHub）
+assets/videos/
