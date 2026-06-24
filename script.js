@@ -108,7 +108,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const playPromise = heroVideo.play();
         if (playPromise && typeof playPromise.catch === 'function') {
-            playPromise.then(hideHeroFallback).catch(showHeroFallback);
+            playPromise.then(hideHeroFallback).catch(() => {
+                hideHeroFallback();
+            });
         }
     }
 
