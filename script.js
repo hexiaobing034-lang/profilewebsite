@@ -81,10 +81,54 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 开场视频自动播放处理
     const heroVideo = document.getElementById('hero-video');
-    
-    heroVideo.addEventListener('loadedmetadata', function() {
-        this.volume = 0.5;
-    });
+    const heroFallback = document.querySelector('.hero-fallback');
+
+    function showHeroFallback() {
+        if (heroFallback) {
+            heroFallback.style.display = 'block';
+        }
+    }
+
+    function hideHeroFallback() {
+        if (heroFallback) {
+            heroFallback.style.display = 'none';
+        }
+    }
+
+    function tryPlayHeroVideo() {
+        if (!heroVideo) return;
+
+        heroVideo.muted = true;
+        heroVideo.defaultMuted = true;
+        heroVideo.playsInline = true;
+        heroVideo.setAttribute('muted', '');
+        heroVideo.setAttribute('playsinline', '');
+        heroVideo.setAttribute('webkit-playsinline', '');
+        heroVideo.setAttribute('x5-playsinline', '');
+
+        const playPromise = heroVideo.play();
+        if (playPromise && typeof playPromise.catch === 'function') {
+            playPromise.then(hideHeroFallback).catch(showHeroFallback);
+        }
+    }
+
+    if (heroVideo) {
+        heroVideo.addEventListener('loadedmetadata', function() {
+            this.volume = 0;
+            tryPlayHeroVideo();
+        });
+
+        heroVideo.addEventListener('canplay', tryPlayHeroVideo);
+        heroVideo.addEventListener('playing', hideHeroFallback);
+        heroVideo.addEventListener('error', showHeroFallback);
+
+        document.addEventListener('WeixinJSBridgeReady', tryPlayHeroVideo, false);
+        document.addEventListener('touchstart', tryPlayHeroVideo, { once: true, passive: true });
+        document.addEventListener('click', tryPlayHeroVideo, { once: true });
+        window.addEventListener('pageshow', tryPlayHeroVideo);
+
+        tryPlayHeroVideo();
+    }
 
     // 页面滚动时的视差效果
     window.addEventListener('scroll', function() {

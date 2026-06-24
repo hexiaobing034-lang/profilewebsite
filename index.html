@@ -18,15 +18,20 @@
                 muted 
                 loop 
                 playsinline
+                webkit-playsinline
+                x5-playsinline
+                x5-video-player-type="h5-page"
+                x5-video-player-fullscreen="false"
+                preload="auto"
                 class="hero-video"
-                poster="assets/covers/hero-cover.jpg"
-                onError="this.poster='assets/covers/hero-cover.jpg'; this.style.display='none'; document.querySelector('.hero-fallback').style.display='block';"
+                poster="assets/covers/seed.jpg"
+                onError="this.poster='assets/covers/seed.jpg'; this.style.display='none'; document.querySelector('.hero-fallback').style.display='block';"
             >
                 <source src="assets/videos/hero.mp4" type="video/mp4">
                 <source src="assets/videos/hero.webm" type="video/webm">
             </video>
             <div class="hero-fallback">
-                <img src="assets/covers/hero-cover.jpg" alt="Hero Cover">
+                <img src="assets/covers/seed.jpg" alt="Hero Cover">
             </div>
         </div>
         <div class="hero-content">
