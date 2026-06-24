@@ -254,7 +254,7 @@ document.addEventListener('DOMContentLoaded', function() {
         cvLink.addEventListener('click', function() {
             docModalTitle.textContent = '个人简历';
             const timestamp = new Date().getTime();
-            docIframe.src = `/assets/docs/cv.html?timestamp=${timestamp}`;
+            docIframe.src = `assets/docs/cv.html?timestamp=${timestamp}`;
             
             docModal.classList.add('active');
             document.body.style.overflow = 'hidden';
