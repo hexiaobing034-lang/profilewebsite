@@ -1,0 +1,399 @@
+
+<style>
+:root {
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --color-text-primary: #1a1a2e;
+  --color-text-secondary: #4a4a5e;
+  --color-text-tertiary: #8a8a9e;
+  --color-background-secondary: #f5f5f8;
+  --color-border-tertiary: #e0e0e8;
+  --color-border-secondary: #d0d0d8;
+  --color-border-primary: #b0b0c0;
+  --border-radius-md: 6px;
+  background-color: #f8f9fa;
+  color: #1a1a2e;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: var(--font-sans);
+  background-color: #f8f9fa;
+  min-height: 100vh;
+}
+.wrap {
+  font-family: var(--font-sans);
+  color: var(--color-text-primary);
+  padding: 32px 24px 56px;
+  max-width: 740px;
+  margin: 0 auto;
+  background-color: #ffffff;
+  min-height: 100vh;
+  box-shadow: 0 0 20px rgba(0,0,0,0.1);
+}
+.film-title { font-size: 20px; font-weight: 500; letter-spacing: 0.1em; margin-bottom: 4px; }
+.film-sub { font-size: 12px; color: var(--color-text-tertiary); letter-spacing: 0.06em; margin-bottom: 36px; }
+
+.arc-row {
+  display: flex;
+  align-items: stretch;
+  gap: 2px;
+  height: 7px;
+  margin-bottom: 6px;
+}
+.arc-seg { border-radius: 2px; opacity: 0.72; }
+.a1 { flex:1.5; background:#B4B2A9; }
+.a2 { flex:2; background:#A8CEDC; }
+.a3 { flex:2; background:#7BBFA8; }
+.a4 { flex:1.5; background:#5DA88A; }
+.a5 { flex:2; background:#3A8E72; }
+.arc-labels { display:flex; gap:2px; margin-bottom:32px; }
+.al { font-size:10px; color:var(--color-text-tertiary); letter-spacing:0.04em; }
+.al1{flex:1.5}.al2{flex:2}.al3{flex:2}.al4{flex:1.5}.al5{flex:2}
+
+.sec-label {
+  font-size:10px; font-weight:500; letter-spacing:0.16em;
+  color:var(--color-text-tertiary); text-transform:uppercase;
+  margin-bottom:20px; padding-bottom:8px;
+  border-bottom:0.5px solid var(--color-border-tertiary);
+}
+
+.scene-block { margin-bottom:40px; }
+
+.scene-header {
+  display:flex; align-items:baseline; gap:14px;
+  margin-bottom:14px; padding-bottom:10px;
+  border-bottom:0.5px solid var(--color-border-tertiary);
+}
+.s-id { font-size:11px; font-weight:500; color:var(--color-text-tertiary); letter-spacing:0.14em; min-width:40px; }
+.s-title { font-size:15px; font-weight:500; flex:1; }
+.s-dur { font-size:11px; color:var(--color-text-tertiary); }
+
+.shot-row {
+  display:grid; grid-template-columns:110px 1fr; gap:0;
+  border-bottom:0.5px solid var(--color-border-tertiary);
+}
+.shot-row:last-child { border-bottom:none; }
+
+.shot-left {
+  padding:14px 14px 14px 0;
+  border-right:0.5px solid var(--color-border-tertiary);
+  display:flex; flex-direction:column; gap:6px;
+}
+.thumb { width:96px; height:60px; border-radius:4px; overflow:hidden; flex-shrink:0; }
+.sk-label { font-size:10px; color:var(--color-text-tertiary); line-height:1.5; }
+
+.shot-right { padding:14px 0 14px 16px; }
+.s-action { font-size:14px; line-height:1.8; margin-bottom:8px; }
+.s-detail { font-size:13px; line-height:1.75; color:var(--color-text-secondary); margin-bottom:10px; }
+.emph { color:var(--color-text-primary); font-weight:500; }
+
+.pills { display:flex; flex-wrap:wrap; gap:5px; margin-top:6px; }
+.pill { font-size:10px; padding:2px 7px; border-radius:20px; letter-spacing:0.03em; }
+.p-shot { background:var(--color-background-secondary); color:var(--color-text-secondary); border:0.5px solid var(--color-border-tertiary); }
+.p-body { background:#FAEEDA; color:#854F0B; border:0.5px solid #FAC775; }
+.p-nat  { background:#E1F5EE; color:#0F6E56; border:0.5px solid #9FE1CB; }
+.p-feel { background:#EEEDFE; color:#3C3489; border:0.5px solid #AFA9EC; }
+.p-snd  { background:#FAECE7; color:#993C1D; border:0.5px solid #F5C4B3; }
+
+@media (prefers-color-scheme: dark) {
+  .p-body { background:#412402; color:#FAC775; border-color:#854F0B; }
+  .p-nat  { background:#04342C; color:#9FE1CB; border-color:#0F6E56; }
+  .p-feel { background:#26215C; color:#CCC9F5; border-color:#534AB7; }
+  .p-snd  { background:#4A1B0C; color:#F5C4B3; border-color:#993C1D; }
+}
+
+.note {
+  font-size:12px; color:var(--color-text-tertiary); line-height:1.6;
+  border-left:2px solid var(--color-border-tertiary);
+  padding-left:10px; margin-top:10px;
+}
+
+.btn-row {
+  display:flex; gap:8px; flex-wrap:wrap;
+  margin-top:36px; padding-top:20px;
+  border-top:0.5px solid var(--color-border-tertiary);
+}
+.act-btn {
+  font-size:12px; padding:6px 14px;
+  border-radius:var(--border-radius-md);
+  border:0.5px solid var(--color-border-secondary);
+  background:var(--color-background-secondary);
+  color:var(--color-text-primary);
+  cursor:pointer; font-family:var(--font-sans); line-height:1.4;
+}
+.act-btn:hover { border-color:var(--color-border-primary); }
+</style>
+
+<div class="wrap">
+
+<div class="film-title">无题·高原少女</div>
+<div class="film-sub">终稿分镜 · 画面动作版 · 约 2 分钟 · 古代藏区</div>
+
+<div class="sec-label">情绪弧线</div>
+<div class="arc-row">
+  <div class="arc-seg a1"></div>
+  <div class="arc-seg a2"></div>
+  <div class="arc-seg a3"></div>
+  <div class="arc-seg a4"></div>
+  <div class="arc-seg a5"></div>
+</div>
+<div class="arc-labels">
+  <div class="al al1">空旷先至</div>
+  <div class="al al2">接触自然</div>
+  <div class="al al3">拥抱风</div>
+  <div class="al al4">目送鸟</div>
+  <div class="al al5">消融</div>
+</div>
+
+<div class="sec-label">分镜</div>
+
+<!-- S01 -->
+<div class="scene-block">
+  <div class="scene-header">
+    <span class="s-id">S·01</span>
+    <span class="s-title">空山无人</span>
+    <span class="s-dur">0:00 – 0:18</span>
+  </div>
+  <div class="shot-row">
+    <div class="shot-left">
+      <svg class="thumb" viewBox="0 0 96 60" xmlns="http://www.w3.org/2000/svg">
+        <rect width="96" height="60" fill="#f0eee6" rx="3"/>
+        <rect x="0" y="0" width="96" height="38" fill="#d8e4ee" opacity="0.55"/>
+        <path d="M0 40 Q20 30 38 34 Q55 22 72 30 Q84 24 96 28 L96 60 L0 60Z" fill="#b0ba9c" opacity="0.55"/>
+        <ellipse cx="22" cy="13" rx="16" ry="4" fill="white" opacity="0.5"/>
+        <ellipse cx="68" cy="9" rx="12" ry="3" fill="white" opacity="0.4"/>
+        <path d="M0 50 Q24 46 48 48 Q72 45 96 48" stroke="#8a9a78" stroke-width="0.7" fill="none" opacity="0.45"/>
+      </svg>
+      <span class="sk-label">极远景<br>无人物</span>
+    </div>
+    <div class="shot-right">
+      <div class="s-action">天空占画面四分之三，地平线极低。雪山是远处一道淡蓝灰的起伏线，草甸是墨绿与枯黄混杂的大色块。风过，整片草一起低下去，再抬起来。云在移动。</div>
+      <div class="s-detail"><span class="emph">画面里没有人，久久没有。</span>让空旷先于人物抵达观者。</div>
+      <div class="pills">
+        <span class="pill p-shot">极远景固定</span>
+        <span class="pill p-nat">草浪缓动·云移</span>
+        <span class="pill p-snd">纯风声，无底噪</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S02 -->
+<div class="scene-block">
+  <div class="scene-header">
+    <span class="s-id">S·02</span>
+    <span class="s-title">少女出现 — 坐定，背风</span>
+    <span class="s-dur">0:18 – 0:38</span>
+  </div>
+  <div class="shot-row">
+    <div class="shot-left">
+      <svg class="thumb" viewBox="0 0 96 60" xmlns="http://www.w3.org/2000/svg">
+        <rect width="96" height="60" fill="#f0eee6" rx="3"/>
+        <rect x="0" y="0" width="96" height="32" fill="#d8e4ee" opacity="0.45"/>
+        <path d="M0 36 Q28 28 58 32 Q76 26 96 30 L96 60 L0 60Z" fill="#b0ba9c" opacity="0.5"/>
+        <ellipse cx="50" cy="37" rx="6" ry="7" fill="#5a4a3a" opacity="0.75"/>
+        <rect x="44" y="42" width="12" height="6" rx="2" fill="#7a5a3a" opacity="0.65"/>
+        <path d="M44 48 Q38 52 35 56" stroke="#7a5a3a" stroke-width="1.2" fill="none" opacity="0.45"/>
+      </svg>
+      <span class="sk-label">中远景<br>背影</span>
+    </div>
+    <div class="shot-right">
+      <div class="s-action">镜头缓慢下沉，落定在少女背影上。她坐在一块岩石上，双膝收拢，藏袍一角被风翻起，拍打岩石边缘，又落下。</div>
+      <div class="s-detail">她的头微微低着，<span class="emph">然后很慢地抬起来，望向远山。</span>发梢横过脸侧，她没有拨开。就这一个动作，没有更多。</div>
+      <div class="pills">
+        <span class="pill p-shot">中远景缓沉定格</span>
+        <span class="pill p-body">低头→抬头望远</span>
+        <span class="pill p-nat">袍角翻动</span>
+        <span class="pill p-feel">独处而非被遗弃</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S03 -->
+<div class="scene-block">
+  <div class="scene-header">
+    <span class="s-id">S·03</span>
+    <span class="s-title">手与草 — 第一次接触</span>
+    <span class="s-dur">0:38 – 0:56</span>
+  </div>
+  <div class="shot-row">
+    <div class="shot-left">
+      <svg class="thumb" viewBox="0 0 96 60" xmlns="http://www.w3.org/2000/svg">
+        <rect width="96" height="60" fill="#ede8d8" rx="3"/>
+        <path d="M18 56 Q32 38 48 30 Q58 26 66 33" stroke="#8a6a4a" stroke-width="1.5" fill="none" opacity="0.7"/>
+        <path d="M48 30 Q50 20 52 16" stroke="#8a6a4a" stroke-width="1" fill="none" opacity="0.6"/>
+        <path d="M53 28 Q57 18 59 14" stroke="#8a6a4a" stroke-width="1" fill="none" opacity="0.55"/>
+        <path d="M57 28 Q62 19 64 15" stroke="#8a6a4a" stroke-width="1" fill="none" opacity="0.5"/>
+        <path d="M28 60 Q30 48 26 40" stroke="#7a8a5a" stroke-width="0.8" fill="none" opacity="0.55"/>
+        <path d="M38 60 Q36 46 40 36" stroke="#7a8a5a" stroke-width="0.8" fill="none" opacity="0.5"/>
+        <path d="M70 60 Q72 50 68 42" stroke="#7a8a5a" stroke-width="0.8" fill="none" opacity="0.5"/>
+      </svg>
+      <span class="sk-label">手部特写<br>指尖触草</span>
+    </div>
+    <div class="shot-right">
+      <div class="s-action">特写切到她的手，掌心朝上，指尖悬在草穗上方，停了一下。</div>
+      <div class="s-detail"><span class="emph">食指轻轻向下，点了一下穗头。</span>草弯下去，弹回来，指尖跟着微微颤了一下。她的手没有收回去，任风带着草穗反复轻扫过指腹。</div>
+      <div class="pills">
+        <span class="pill p-shot">手部极近景</span>
+        <span class="pill p-body">点触·颤·停留</span>
+        <span class="pill p-nat">草穗弹回</span>
+        <span class="pill p-snd">草叶细碎摩擦声</span>
+        <span class="pill p-feel">试探式的第一次接触</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S04 -->
+<div class="scene-block">
+  <div class="scene-header">
+    <span class="s-id">S·04</span>
+    <span class="s-title">云影经过 — 渺小而安心</span>
+    <span class="s-dur">0:56 – 1:12</span>
+  </div>
+  <div class="shot-row">
+    <div class="shot-left">
+      <svg class="thumb" viewBox="0 0 96 60" xmlns="http://www.w3.org/2000/svg">
+        <rect width="96" height="60" fill="#e8eef4" rx="3"/>
+        <rect x="0" y="0" width="96" height="28" fill="#ccdce8" opacity="0.5"/>
+        <path d="M0 38 Q28 30 56 34 Q74 28 96 32 L96 60 L0 60Z" fill="#b0ba9c" opacity="0.5"/>
+        <!-- shadow band crossing left to right -->
+        <rect x="0" y="28" width="44" height="32" fill="#8899aa" opacity="0.18" rx="0"/>
+        <!-- figure in shadow zone -->
+        <ellipse cx="30" cy="37" rx="5" ry="6" fill="#5a4a3a" opacity="0.7"/>
+        <rect x="25" y="42" width="10" height="5" rx="1" fill="#7a5a3a" opacity="0.6"/>
+        <!-- light zone ahead -->
+        <rect x="44" y="28" width="52" height="32" fill="#f5e8c0" opacity="0.12" rx="0"/>
+      </svg>
+      <span class="sk-label">中远景<br>云影入画</span>
+    </div>
+    <div class="shot-right">
+      <div class="s-action">镜头拉回中远景，能看见她坐着的全身和周围一片草甸。画面左侧，一大片云影从远处地面滑来——草甸由亮变暗，那道阴影线缓缓向右推进。</div>
+      <div class="s-detail"><span class="emph">云影经过她身上，她被暗下去，停了几秒，再被放开，重新回到光里。</span>她没有抬头看云，只是低着头，感受那片凉意盖过来又离开。阴影继续向右，越过她，扫向更远的山坡，消失。</div>
+      <div class="pills">
+        <span class="pill p-shot">中远景固定</span>
+        <span class="pill p-nat">云影从左向右扫过</span>
+        <span class="pill p-body">身体被暗→被放开</span>
+        <span class="pill p-snd">风声微微加强再平复</span>
+        <span class="pill p-feel">渺小·宇宙经过她·安心</span>
+      </div>
+      <div class="note">云影不是针对她来的，也不因她而停——宇宙级别的光影变化就这样路过了她。她什么都不需要做，只是在那里。</div>
+    </div>
+  </div>
+</div>
+
+<!-- S05 -->
+<div class="scene-block">
+  <div class="scene-header">
+    <span class="s-id">S·05</span>
+    <span class="s-title">张开双臂 — 拥抱风</span>
+    <span class="s-dur">1:12 – 1:32</span>
+  </div>
+  <div class="shot-row">
+    <div class="shot-left">
+      <svg class="thumb" viewBox="0 0 96 60" xmlns="http://www.w3.org/2000/svg">
+        <rect width="96" height="60" fill="#eef3f8" rx="3"/>
+        <rect x="0" y="0" width="96" height="28" fill="#d0e2ee" opacity="0.5"/>
+        <path d="M0 40 Q28 32 56 36 Q76 30 96 34 L96 60 L0 60Z" fill="#b0ba9c" opacity="0.48"/>
+        <ellipse cx="48" cy="35" rx="5" ry="6" fill="#5a4a3a" opacity="0.72"/>
+        <path d="M44 36 Q30 33 22 31" stroke="#7a5a3a" stroke-width="2" fill="none" opacity="0.7" stroke-linecap="round"/>
+        <path d="M52 36 Q66 33 74 31" stroke="#7a5a3a" stroke-width="2" fill="none" opacity="0.7" stroke-linecap="round"/>
+        <path d="M42 41 Q34 50 28 57" stroke="#8a6a44" stroke-width="1.1" fill="none" opacity="0.45"/>
+        <path d="M54 41 Q62 50 68 57" stroke="#8a6a44" stroke-width="1.1" fill="none" opacity="0.45"/>
+      </svg>
+      <span class="sk-label">全身背面<br>双臂展开</span>
+    </div>
+    <div class="shot-right">
+      <div class="s-action">她站起来，走到坡顶开阔处，停下。镜头退远，天空在她上方铺开。</div>
+      <div class="s-detail"><span class="emph">她慢慢抬起双臂，向两侧展开——掌心朝前，是松开的姿势，不是用力的姿势。</span>风从正面涌来，袍袖鼓起，下摆扬起，发丝全部向后飘。她就这样站着，让风把她整个人灌满。随后切到面部侧近景：<span class="emph">她闭上眼睛，</span>风把散发吹过脸颊，她没有躲，轻轻呼出一口气，眉头和嘴角都是松的。</div>
+      <div class="pills">
+        <span class="pill p-shot">全身背面→面部侧近景</span>
+        <span class="pill p-body">双臂侧展·闭眼·呼气</span>
+        <span class="pill p-nat">袍袖鼓起·发丝后飘</span>
+        <span class="pill p-snd">风声此刻最饱满</span>
+        <span class="pill p-feel">全身交出去，无防备</span>
+      </div>
+      <div class="note">全片唯一一次正面拍她的脸，但眼睛是合着的。观者感受到她的状态，却无法与她对视——保持含蓄的距离。</div>
+    </div>
+  </div>
+</div>
+
+<!-- S06 -->
+<div class="scene-block">
+  <div class="scene-header">
+    <span class="s-id">S·06</span>
+    <span class="s-title">仰头目送鸟 — 她目送，不追</span>
+    <span class="s-dur">1:32 – 1:48</span>
+  </div>
+  <div class="shot-row">
+    <div class="shot-left">
+      <svg class="thumb" viewBox="0 0 96 60" xmlns="http://www.w3.org/2000/svg">
+        <rect width="96" height="60" fill="#eaf0f6" rx="3"/>
+        <rect x="0" y="0" width="96" height="60" fill="#d4e4f0" opacity="0.4"/>
+        <!-- bird shape -->
+        <path d="M58 14 Q62 10 68 12 Q64 16 58 14Z" fill="#4a4a5a" opacity="0.65"/>
+        <path d="M58 14 Q54 10 48 12 Q52 16 58 14Z" fill="#4a4a5a" opacity="0.6"/>
+        <!-- figure below, head tilted up -->
+        <ellipse cx="36" cy="44" rx="5" ry="6" fill="#5a4a3a" opacity="0.7"/>
+        <rect x="30" y="48" width="12" height="6" rx="2" fill="#7a5a3a" opacity="0.6"/>
+        <!-- gaze line suggestion -->
+        <path d="M38 41 Q48 28 60 16" stroke="#8899aa" stroke-width="0.5" fill="none" opacity="0.25" stroke-dasharray="2,3"/>
+      </svg>
+      <span class="sk-label">仰角中景<br>人·鸟·天</span>
+    </div>
+    <div class="shot-right">
+      <div class="s-action">她臂膀放下，站在原地。一只鸟从画面左上方斜掠而过，无声，速度不快。</div>
+      <div class="s-detail"><span class="emph">她仰起头，视线跟着鸟走。</span>鸟越过她头顶，向右上方消失在画框之外。她的头还停在那个方向——没有立刻低下来，就那样仰着，望着鸟消失的地方，停了几秒。然后慢慢低回来，重新看向远山。</div>
+      <div class="pills">
+        <span class="pill p-shot">仰角中景</span>
+        <span class="pill p-body">仰头跟视线·停在那里·慢慢低回</span>
+        <span class="pill p-nat">鸟无声掠过</span>
+        <span class="pill p-snd">极短促的一声翅羽声，仅此而已</span>
+        <span class="pill p-feel">目送·不追·安然</span>
+      </div>
+      <div class="note">鸟来了，走了，她看着。她不需要抓住它，目送本身就是一种完整的情感——知道自己渺小，但很安心。</div>
+    </div>
+  </div>
+</div>
+
+<!-- S07 -->
+<div class="scene-block">
+  <div class="scene-header">
+    <span class="s-id">S·07</span>
+    <span class="s-title">走入山中 — 消融</span>
+    <span class="s-dur">1:48 – 2:10</span>
+  </div>
+  <div class="shot-row">
+    <div class="shot-left">
+      <svg class="thumb" viewBox="0 0 96 60" xmlns="http://www.w3.org/2000/svg">
+        <rect width="96" height="60" fill="#eef3f8" rx="3"/>
+        <rect x="0" y="0" width="96" height="28" fill="#d0e2ee" opacity="0.45"/>
+        <path d="M0 38 Q28 30 56 34 Q76 28 96 32 L96 60 L0 60Z" fill="#b0ba9c" opacity="0.5"/>
+        <ellipse cx="60" cy="35" rx="2.5" ry="3" fill="#5a4a3a" opacity="0.5"/>
+        <rect x="58" y="37" width="5" height="4" rx="1" fill="#7a5a3a" opacity="0.45"/>
+        <ellipse cx="70" cy="33" rx="1.5" ry="2" fill="#6a5a4a" opacity="0.25"/>
+      </svg>
+      <span class="sk-label">固定远景<br>人渐隐</span>
+    </div>
+    <div class="shot-right">
+      <div class="s-action">镜头固定不动。她缓缓向更深处的山坡走去，背影越来越小。</div>
+      <div class="s-detail">走出十步左右，她停了一下，<span class="emph">把双臂再次微微向外张开——这次是背着身，剪影很小，像是一个只对高原说的、不需要被看见的再见，</span>然后臂膀落下，继续往前走。越走越小，深色轮廓渐渐与草甸山坡融为一体，分不清了。画面停在这个静止构图里，缓慢叠化回S·01的天空，淡出。</div>
+      <div class="pills">
+        <span class="pill p-shot">固定远景·人物渐隐</span>
+        <span class="pill p-body">中途再张臂·收·消融</span>
+        <span class="pill p-nat">草甸将她包裹</span>
+        <span class="pill p-snd">风声单独留至黑场</span>
+        <span class="pill p-feel">主动走入，不是离开</span>
+      </div>
+      <div class="note">镜头不追她。山一直都在，人来了又去，山不会特别在意——这是高原的温柔。</div>
+    </div>
+  </div>
+</div>
+
+<div class="btn-row">
+  <button class="act-btn" onclick="sendPrompt('帮我给这个短片写配乐方案，包括藏族乐器选择和每场戏的音量情绪变化')">配乐方案</button>
+  <button class="act-btn" onclick="sendPrompt('给每个关键镜头写AI生图的英文prompt，基于老式东方手绘动画的画风描述')">AI 生图 Prompt</button>
+  <button class="act-btn" onclick="sendPrompt('帮我写这个短片的导演阐述，200字左右')">导演阐述</button>
+</div>
+
+</div>

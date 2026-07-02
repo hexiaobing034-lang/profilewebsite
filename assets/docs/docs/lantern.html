@@ -1,0 +1,236 @@
+
+<style>
+:root {
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --color-text-primary: #1a1a2e;
+  --color-text-secondary: #4a4a5e;
+  --color-text-tertiary: #8a8a9e;
+  --color-background-secondary: #f5f5f8;
+  --color-border-tertiary: #e0e0e8;
+  --border-radius-lg: 10px;
+  --border-radius-md: 6px;
+}
+body {
+  font-family: var(--font-sans);
+  background-color: #f8f9fa;
+  min-height: 100vh;
+  margin: 0;
+}
+.w{padding:1rem 2rem;font-family:var(--font-sans);color:var(--color-text-primary);max-width:700px;margin:0 auto;background:#ffffff;min-height:100vh;box-shadow:0 0 20px rgba(0,0,0,0.1)}
+.film-info{background:var(--color-background-secondary);border-radius:var(--border-radius-lg);padding:.9rem 1.1rem;margin-bottom:1.2rem;display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.fi-item{font-size:12px}
+.fi-label{color:var(--color-text-tertiary);margin-bottom:2px}
+.fi-val{font-weight:500;color:var(--color-text-primary)}
+.scene{border:1px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);margin-bottom:1rem;overflow:hidden}
+.scene-head{padding:.8rem 1.1rem;border-bottom:1px solid var(--color-border-tertiary);display:flex;align-items:center;gap:10px}
+.scene-num{font-size:11px;font-weight:500;padding:3px 9px;border-radius:20px;white-space:nowrap}
+.scene-title{font-size:15px;font-weight:500}
+.scene-time{font-size:12px;color:var(--color-text-tertiary);margin-left:auto}
+.emotion-tag{font-size:11px;padding:2px 8px;border-radius:20px;margin-left:6px}
+.scene-body{padding:1rem 1.1rem}
+.scene-desc{font-size:13.5px;line-height:1.7;color:var(--color-text-secondary);margin-bottom:.9rem}
+.shots{display:flex;flex-direction:column;gap:6px}
+.shot{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:.7rem .9rem;display:grid;grid-template-columns:64px 1fr;gap:10px}
+.shot-id{font-size:12px;font-weight:500;color:var(--color-text-tertiary)}
+.shot-dur{font-size:11px;color:var(--color-text-tertiary);margin-top:2px}
+.shot-desc{font-size:13px;line-height:1.65;color:var(--color-text-primary)}
+.shot-cam{font-size:11px;color:var(--color-text-tertiary);margin-top:3px}
+.merge-note{background:#FEF9EC;border-left:3px solid #E8A65F;border-radius:0 var(--border-radius-md) var(--border-radius-md) 0;padding:.6rem .85rem;font-size:12.5px;color:#5A3A10;margin-bottom:.9rem;line-height:1.6}
+
+.s1 .scene-num{background:#FAEEDA;color:#633806}
+.s2 .scene-num{background:#FBEAF0;color:#4B1528}
+.s3 .scene-num{background:#FAEEDA;color:#633806}
+.s4 .scene-num{background:#FAECE7;color:#4A1B0C}
+.s5 .scene-num{background:#E1F5EE;color:#085041}
+
+.e1{background:#E6F1FB;color:#0C447C}
+.e2{background:#FBEAF0;color:#4B1528}
+.e3{background:#FAEEDA;color:#633806}
+
+hr.d{border:none;border-top:1px solid var(--color-border-tertiary);margin:.8rem 0}
+.color-bar{display:flex;gap:6px;margin-top:.7rem;align-items:center}
+.cb-label{font-size:11px;color:var(--color-text-tertiary)}
+.cb{width:14px;height:14px;border-radius:3px;flex-shrink:0}
+.cb-name{font-size:11px;color:var(--color-text-secondary)}
+.total{background:var(--color-background-secondary);border-radius:var(--border-radius-lg);padding:.85rem 1.1rem;font-size:13px;line-height:1.8;color:var(--color-text-secondary)}
+.total b{font-weight:500;color:var(--color-text-primary)}
+</style>
+<div class="w">
+
+<div class="film-info">
+  <div class="fi-item"><div class="fi-label">片名</div><div class="fi-val">《一灯渡》</div></div>
+  <div class="fi-item"><div class="fi-label">总时长</div><div class="fi-val">约75秒</div></div>
+  <div class="fi-item"><div class="fi-label">场景数</div><div class="fi-val">5场景</div></div>
+  <div class="fi-item"><div class="fi-label">镜头数</div><div class="fi-val">17镜</div></div>
+</div>
+
+<!-- 场景1 -->
+<div class="scene s1">
+  <div class="scene-head">
+    <span class="scene-num">场景 01</span>
+    <span class="scene-title">心愿 — 少女与灯</span>
+    <span class="emotion-tag e2">情感线③少女心愿</span>
+    <span class="scene-time">0–18s</span>
+  </div>
+  <div class="scene-body">
+    <div class="scene-desc">上元节夜晚，河边人群三两成群放灯。少女独自蹲在一个安静的角落，双手捧着点亮的莲花灯，虔诚放入河中，低头许愿。全场景无对白，以手部和背影局部建立情感锚点。</div>
+    <div class="shots">
+      <div class="shot">
+        <div><div class="shot-id">镜头 01</div><div class="shot-dur">4s</div></div>
+        <div><div class="shot-desc">河边全景：人群三两成群，灯火密集，热闹虚化为背景光晕。前景角落，少女背影清晰居画面左三分之一，蹲于石阶边缘，是全画面唯一清晰存在。</div><div class="shot-cam">固定镜头，前景清晰→背景虚化，三层景深</div></div>
+      </div>
+      <div class="shot">
+        <div><div class="shot-id">镜头 02</div><div class="shot-dur">4s</div></div>
+        <div><div class="shot-desc">手部特写：双手托着莲花灯，灯纸半透明质感清晰可见，手工折痕细节入画——非遗花灯工艺在此呈现。灯已点亮，暖光从灯内透出。</div><div class="shot-cam">极近特写，固定，微微呼吸感</div></div>
+      </div>
+      <div class="shot">
+        <div><div class="shot-id">镜头 03</div><div class="shot-dur">4s</div></div>
+        <div><div class="shot-desc">下半张脸入画：嘴唇轻抿，双手交握抵住眉间，低头许愿。暖光从下往上打亮脸颊。许愿结束，手缓缓松开，将灯轻放入水。</div><div class="shot-cam">近景，固定，光从下往上</div></div>
+      </div>
+      <div class="shot">
+        <div><div class="shot-id">镜头 04</div><div class="shot-dur">6s</div></div>
+        <div><div class="shot-desc">莲花灯触水瞬间：水面轻微涟漪扩散，灯稳稳漂起，开始缓缓漂离。水面倒影中灯光拉出第一道金线。少女双手仍停在水面上方，目送灯漂出。</div><div class="shot-cam">俯视近景，缓慢拉远</div></div>
+      </div>
+    </div>
+    <hr class="d">
+    <div class="color-bar"><span class="cb-label">主色调</span><div class="cb" style="background:#F7F1D9"></div><span class="cb-name">粉白</span><div class="cb" style="background:#E8A65F"></div><span class="cb-name">唐茶</span><div class="cb" style="background:#4A3A33"></div><span class="cb-name">幽冥（背景）</span></div>
+  </div>
+</div>
+
+<!-- 场景2 -->
+<div class="scene s2">
+  <div class="scene-head">
+    <span class="scene-num">场景 02</span>
+    <span class="scene-title">盛世 — 灯会大全景</span>
+    <span class="emotion-tag e3">情感线②繁华转瞬</span>
+    <span class="scene-time">18–38s</span>
+  </div>
+  <div class="scene-body">
+    <div class="merge-note">⚑ 原脚本场景3（漂流引入）并入此处作为过渡，不单独成场景。灯漂出→视角开阔→盛世登场，一气呵成。</div>
+    <div class="scene-desc">莲花灯漂入河中央，视角随灯拉开，画面突然开阔——长安御河万灯齐明，盛世全景登场。水彩饱和度全片最高。随后叠化三个意象，并在盛世中插入灯铺工匠画面，完成非遗技艺的宏观展示。</div>
+    <div class="shots">
+      <div class="shot">
+        <div><div class="shot-id">镜头 05</div><div class="shot-dur">3s</div></div>
+        <div><div class="shot-desc">过渡：灯漂入河中，水面倒影里隐约浮现宫阙剪影，为盛世埋下线索。画面色温开始升高。</div><div class="shot-cam">跟随镜头，缓慢拉远</div></div>
+      </div>
+      <div class="shot">
+        <div><div class="shot-id">镜头 06</div><div class="shot-dur">4s</div></div>
+        <div><div class="shot-desc">大全景：整条长安御河，万灯倒映水面，宫阙剪影耸立远处，烟火在天上炸开如花瓣，人群虚影熙攘。全片色彩最浓烈一帧，金橙铺满画面，停留4秒。</div><div class="shot-cam">广角固定，水面视角仰望</div></div>
+      </div>
+      <div class="shot">
+        <div><div class="shot-id">镜头 07</div><div class="shot-dur">3s</div></div>
+        <div><div class="shot-desc">叠化①：灯铺内，工匠低头专注制作各式花灯——鱼灯、莲花灯、宫灯并排悬挂，手部动作清晰。非遗技艺宏观展示。灯铺外透出暖光与嘈杂人声虚影。</div><div class="shot-cam">中景，固定，暖光打底</div></div>
+      </div>
+      <div class="shot">
+        <div><div class="shot-id">镜头 08</div><div class="shot-dur">3s</div></div>
+        <div><div class="shot-desc">叠化②：龙灯盘旋于人群之上，鳞片水彩点染，金红色，气势磅礴。</div><div class="shot-cam">仰视，缓慢跟随龙灯移动</div></div>
+      </div>
+      <div class="shot">
+        <div><div class="shot-id">镜头 09</div><div class="shot-dur">3s</div></div>
+        <div><div class="shot-desc">叠化③：花灯阵列俯视，密密麻麻铺满河面，像星河落地。孩童奔跑的虚影一闪而过。</div><div class="shot-cam">俯视，固定</div></div>
+      </div>
+      <div class="shot">
+        <div><div class="shot-id">镜头 10</div><div class="shot-dur">4s</div></div>
+        <div><div class="shot-desc">叠化④：舞者水袖一扫而过，带走画面暖色，色温开始下降。袖影消散后，河面重归平静，只剩那盏莲花灯还在漂。</div><div class="shot-cam">中景，水袖横扫镜头，快速剪辑</div></div>
+      </div>
+    </div>
+    <hr class="d">
+    <div class="color-bar"><span class="cb-label">主色调</span><div class="cb" style="background:#A82525"></div><span class="cb-name">砖红</span><div class="cb" style="background:#E8A65F"></div><span class="cb-name">唐茶</span><div class="cb" style="background:#F7F1D9"></div><span class="cb-name">粉白</span></div>
+  </div>
+</div>
+
+<!-- 场景3 -->
+<div class="scene s3">
+  <div class="scene-head">
+    <span class="scene-num">场景 03</span>
+    <span class="scene-title">思念 — 孤灯远漂</span>
+    <span class="emotion-tag e1">情感线①思念离人</span>
+    <span class="scene-time">38–55s</span>
+  </div>
+  <div class="scene-body">
+    <div class="merge-note">⚑ 原脚本场景5和场景6合并为此场景，两者情绪一致无需分开。</div>
+    <div class="scene-desc">喧嚣褪去，其他灯火陆续熄灭，只剩莲花灯独自漂向远处。少女背影目送，风动裙角，转身离去。全段节奏全片最慢，色调从暖金渐变冷蓝，王昌龄式孤清。</div>
+    <div class="shots">
+      <div class="shot">
+        <div><div class="shot-id">镜头 11</div><div class="shot-dur">4s</div></div>
+        <div><div class="shot-desc">喧嚣消退：周围灯火一盏盏淡出，河面渐宽渐静。莲花灯孤独漂行，灯光在水中拉出长长金线，暗示牵挂。色温开始向冷蓝偏移。</div><div class="shot-cam">固定，缓慢拉远</div></div>
+      </div>
+      <div class="shot">
+        <div><div class="shot-id">镜头 12</div><div class="shot-dur">5s</div></div>
+        <div><div class="shot-desc">少女背影目送：她站于岸边，风吹发丝与裙角入画。她静静凝视远处的灯，不追，不唤。镜头在她背影上停留，给足情绪空间。</div><div class="shot-cam">固定中景，风动细节</div></div>
+      </div>
+      <div class="shot">
+        <div><div class="shot-id">镜头 13</div><div class="shot-dur">4s</div></div>
+        <div><div class="shot-desc">少女转身离去：她缓缓转身，背影消失入人群。镜头留在原地，只剩空旷河岸与远处孤灯。</div><div class="shot-cam">固定，人物走出画面</div></div>
+      </div>
+      <div class="shot">
+        <div><div class="shot-id">镜头 14</div><div class="shot-dur">4s</div></div>
+        <div><div class="shot-desc">孤灯远漂：长镜，灯越来越小，河面越来越空。冷蓝色调完全接管画面，两岸只剩模糊树影。</div><div class="shot-cam">长镜固定，灯缓缓缩小至远方</div></div>
+      </div>
+    </div>
+    <hr class="d">
+    <div class="color-bar"><span class="cb-label">主色调</span><div class="cb" style="background:#E8A65F"></div><span class="cb-name">唐茶→</span><div class="cb" style="background:#9CCBA7"></div><span class="cb-name">蕉鹃→</span><div class="cb" style="background:#4A3A33"></div><span class="cb-name">幽冥</span></div>
+  </div>
+</div>
+
+<!-- 场景4 -->
+<div class="scene s4">
+  <div class="scene-head">
+    <span class="scene-num">场景 04</span>
+    <span class="scene-title">燃尽 — 繁华如水散</span>
+    <span class="emotion-tag e3">情感线②收尾</span>
+    <span class="scene-time">55–65s</span>
+  </div>
+  <div class="scene-body">
+    <div class="scene-desc">火焰将熄未熄，水面倒影里盛世万灯浮现一瞬——灯的记忆，繁华最后的影像。随着火熄，倒影如水彩溶于水，边界消散。繁华不是消亡，是化入水中。</div>
+    <div class="shots">
+      <div class="shot">
+        <div><div class="shot-id">镜头 15</div><div class="shot-dur">4s</div></div>
+        <div><div class="shot-desc">慢动作特写：莲花灯火焰变小，灯纸在光中透明化，可见内部烛芯最后一点火。灯纸的工笔线条在透明中若隐若现——非遗工艺三度呈现。</div><div class="shot-cam">极近特写，慢动作</div></div>
+      </div>
+      <div class="shot">
+        <div><div class="shot-id">镜头 16</div><div class="shot-dur">6s</div></div>
+        <div><div class="shot-desc">倒影闪回：火熄前一刻，水面倒影浮现盛世万灯一瞬，是灯的记忆。随后倒影如水彩墨水溶于水，边界化开，消散进深蓝河面，归于平静。</div><div class="shot-cam">水面俯视，慢动作溶散</div></div>
+      </div>
+    </div>
+    <hr class="d">
+    <div class="color-bar"><span class="cb-label">主色调</span><div class="cb" style="background:#9CCBA7"></div><span class="cb-name">蕉鹃</span><div class="cb" style="background:#4A3A33"></div><span class="cb-name">幽冥</span><div class="cb" style="background:#F7F1D9"></div><span class="cb-name">粉白（透明灯纸）</span></div>
+  </div>
+</div>
+
+<!-- 场景5 -->
+<div class="scene s5">
+  <div class="scene-head">
+    <span class="scene-num">场景 05</span>
+    <span class="scene-title">余烬 — 心愿已渡</span>
+    <span class="emotion-tag e2">情感线③收尾</span>
+    <span class="scene-time">65–75s</span>
+  </div>
+  <div class="scene-body">
+    <div class="scene-desc">全黑一秒静默。水面浮起星光，与开篇灯芯呼应。远处另一盏灯漂来，两灯缓缓相向，相遇合光——心愿渡出去了，也被接住了。</div>
+    <div class="shots">
+      <div class="shot">
+        <div><div class="shot-id">镜头 17</div><div class="shot-dur">2s</div></div>
+        <div><div class="shot-desc">全黑一秒：沉默，给观众呼吸空间。</div><div class="shot-cam">黑场</div></div>
+      </div>
+      <div class="shot">
+        <div><div class="shot-id">镜头 18</div><div class="shot-dur">3s</div></div>
+        <div><div class="shot-desc">星光浮现：深蓝河面，一点微光从水面浮起，与开篇工匠点亮鱼眼、少女点灯形成首尾呼应。</div><div class="shot-cam">固定，极简构图</div></div>
+      </div>
+      <div class="shot">
+        <div><div class="shot-id">镜头 19</div><div class="shot-dur">5s</div></div>
+        <div><div class="shot-desc">两灯相遇：远处另一盏灯缓缓漂来，两灯相向而行，在画面中央相遇，光晕叠合，温暖合光。定格。</div><div class="shot-cam">固定远景，两灯缓缓靠近</div></div>
+      </div>
+    </div>
+    <hr class="d">
+    <div class="color-bar"><span class="cb-label">主色调</span><div class="cb" style="background:#4A3A33"></div><span class="cb-name">幽冥→</span><div class="cb" style="background:#E8A65F"></div><span class="cb-name">唐茶（合光）</span></div>
+  </div>
+</div>
+
+<div class="total">
+  <b>完整结构：</b>场景01（0–18s）心愿 → 场景02（18–38s）盛世 → 场景03（38–55s）思念 → 场景04（55–65s）燃尽 → 场景05（65–75s）余烬<br>
+  <b>镜头总计：</b>19镜，其中固定镜头14个，跟随/运动镜头5个，慢动作2个<br>
+  <b>三条情感线收口：</b>③少女心愿（01→19）/ ②繁华转瞬（06→16）/ ①思念离人（11→14）
+</div>
+
+</div>

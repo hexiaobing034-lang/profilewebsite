@@ -1,0 +1,596 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>TeamCard AI · 小荔</title>
+<style>
+:root{
+  --safe:44px;--mx:16px;--gap:20px;--pad:16px;--nav-h:60px;
+  --bg:#F5F5F5;--card:#FFF;--txt:#1A1A1A;--txt2:#666;--txt3:#999;--border:#E8E8E8;
+  --red:#E62080;--red-light:#FDEBF2;
+  --shadow-sm:0 1px 2px rgba(0,0,0,0.03);--shadow-md:0 4px 16px rgba(0,0,0,0.05);
+  --radius-sm:12px;--radius-md:16px;--radius-lg:20px;--radius-xl:24px;--radius-pill:9999px;
+  --ease:cubic-bezier(0.19,1,0.22,1);--spring:cubic-bezier(0.34,1.56,0.64,1);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","PingFang SC",sans-serif;font-size:16px;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}
+body{background:#E8E8ED;display:flex;justify-content:center;align-items:flex-start;min-height:100vh;padding:20px 0}
+::-webkit-scrollbar{width:0;height:0}
+
+/* Phone Frame */
+.phone-outer{max-width:430px;width:100%;display:flex;justify-content:center}
+.phone-frame{width:375px;height:812px;background:var(--bg);border-radius:36px;overflow:hidden;position:relative;box-shadow:0 0 0 1px #D0D0D0,0 0 0 8px #1A1A1A,0 0 0 10px #333,0 20px 60px rgba(0,0,0,0.25)}
+.status-bar{height:44px;background:#FFF;display:flex;align-items:center;justify-content:space-between;padding:0 28px;font-size:12px;font-weight:600;color:var(--txt);position:sticky;top:0;z-index:150;border-radius:36px 36px 0 0}
+.status-bar__time{font-size:13px;font-weight:700}
+.status-icons{display:flex;align-items:center;gap:5px;font-size:12px}
+.dynamic-island{position:absolute;top:8px;left:50%;transform:translateX(-50%);width:120px;height:30px;background:#1A1A1A;border-radius:20px;z-index:151}
+
+.app-content{height:calc(812px - 44px);overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
+.page{display:none;flex-direction:column;min-height:100%}
+.page--active{display:flex;animation:pageIn 0.3s var(--ease)}
+@keyframes pageIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.page__content{flex:1 0 auto;padding:0 var(--mx) calc(var(--nav-h) + 12px);display:flex;flex-direction:column;gap:var(--gap)}
+
+/* Typography */
+.t-hero{font-size:24px;font-weight:800;letter-spacing:-0.5px;line-height:1.25;color:var(--txt)}
+.t-title{font-size:21px;font-weight:700;letter-spacing:-0.4px;color:var(--txt)}
+.t-section{font-size:17px;font-weight:600;letter-spacing:-0.3px;color:var(--txt)}
+.t-body{font-size:14px;font-weight:400;color:var(--txt2);line-height:1.6}
+.t-caption{font-size:12px;font-weight:400;color:var(--txt3)}
+
+/* Card */
+.card{background:var(--card);border-radius:var(--radius-xl);padding:var(--pad);box-shadow:var(--shadow-sm);border:1px solid var(--border)}
+
+/* Floating Buttons Container */
+.explore-fabs-container{position:absolute;bottom:calc(var(--nav-h) + 12px);left:0;right:0;display:none;flex-direction:row;justify-content:center;gap:12px;z-index:90}
+.explore-fabs-container.page-explore-active{display:flex}
+.explore-fab{display:inline-flex;align-items:center;gap:6px;padding:11px 18px;background:var(--red);color:#fff;border:none;border-radius:var(--radius-pill);font-size:14px;font-weight:600;font-family:inherit;cursor:pointer;box-shadow:0 4px 16px rgba(230,32,128,0.3);z-index:20}
+
+/* TabBar */
+.tabbar{position:absolute;bottom:0;left:0;right:0;height:var(--nav-h);background:rgba(255,255,255,0.94);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:0.5px solid var(--border);display:flex;align-items:center;justify-content:space-around;padding:0 8px;z-index:100}
+.tabbar__item{display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;border:none;background:none;color:var(--txt3);font-family:inherit;padding:6px 10px;transition:color 0.2s}
+.tabbar__item--active{color:var(--red)}
+.tabbar__icon{font-size:21px;transition:transform 0.3s var(--spring)}
+.tabbar__item:active .tabbar__icon{transform:scale(0.82)}
+.tabbar__label{font-size:10px;font-weight:500}
+.tabbar__item--ai .tabbar__icon{width:44px;height:44px;border-radius:50%;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.tabbar__item--ai .tabbar__icon img{width:100%;height:100%;object-fit:cover}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:none;font-family:inherit;cursor:pointer;white-space:nowrap;transition:all 0.18s var(--ease);-webkit-tap-highlight-color:transparent}
+.btn--primary{background:var(--red);color:#fff;font-size:15px;font-weight:600;height:48px;padding:0 24px;border-radius:var(--radius-md)}
+.btn--primary:active{transform:scale(0.97);background:#B80E60}
+.btn--secondary{background:var(--card);color:var(--txt);font-size:14px;font-weight:600;height:44px;padding:0 20px;border-radius:var(--radius-md);border:1.5px solid var(--border)}
+.btn--secondary:active{background:var(--bg)}
+.btn--text{background:none;color:var(--red);font-size:14px;font-weight:600;padding:8px 12px;border-radius:8px}
+.btn--text:active{background:var(--red-light)}
+.btn--block{width:100%}.btn--sm{height:36px;padding:0 14px;font-size:13px}.btn--danger{background:var(--red-light);color:var(--red);font-size:14px;font-weight:600;height:44px;padding:0 20px;border-radius:var(--radius-md)}
+
+/* Tags */
+.tag{display:inline-flex;align-items:center;gap:4px;padding:5px 12px;border-radius:var(--radius-pill);font-size:12px;font-weight:500;white-space:nowrap}
+.tag--skill{background:var(--red-light);color:var(--red)}
+.tag--role{background:var(--red-light);color:var(--red);font-weight:600}
+.tag--ai{background:var(--red-light);color:var(--red);font-weight:600}
+.tag--status-success{background:#ECFDF5;color:#10B981}.tag--status-warning{background:#FFFBEB;color:#F59E0B}.tag--status-info{background:#EFF6FF;color:#3B82F6}.tag--status-danger{background:var(--red-light);color:var(--red)}.tag--status-neutral{background:var(--bg);color:var(--txt3)}
+
+/* Utility */
+.flex-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.flex-between{display:flex;align-items:center;justify-content:space-between}
+.mt-4{margin-top:4px}.mt-8{margin-top:8px}.mt-12{margin-top:12px}.mb-8{margin-bottom:8px}.w-full{width:100%}
+
+/* ============================================================
+   HOME PAGE
+   ============================================================ */
+.home-greet{display:flex;align-items:center;justify-content:space-between;padding:10px 0 0}
+.home-greet__left{display:flex;align-items:center;gap:10px}
+.home-avatar{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#E62080,#B80E60);color:#fff;display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:700}
+.home-hi{font-size:17px;font-weight:700}
+.home-notify{width:36px;height:36px;border-radius:50%;background:var(--card);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:16px;cursor:pointer;position:relative}
+.home-notify::after{content:'';position:absolute;top:7px;right:7px;width:8px;height:8px;border-radius:50%;background:var(--red)}
+.hero-title{font-size:24px;font-weight:800;letter-spacing:-0.5px;padding:6px 0 10px}
+.ai-search{display:flex;align-items:center;gap:8px;padding:6px 8px 6px 16px;background:var(--card);border-radius:var(--radius-pill);border:1.5px solid var(--border);box-shadow:var(--shadow-sm)}
+.ai-search__input{flex:1;border:none;background:none;font-size:14px;font-family:inherit;color:var(--txt);outline:none;padding:8px 0}
+.ai-search__input::placeholder{color:var(--txt3)}
+.ai-search__btn{display:flex;align-items:center;gap:4px;padding:8px 14px;background:var(--red-light);border-radius:var(--radius-pill);font-size:12px;font-weight:600;color:var(--red);cursor:pointer;border:none;white-space:nowrap;font-family:inherit;flex-shrink:0}
+
+/* Personal card showcase (user's own card on home) */
+.personal-card{background:linear-gradient(145deg,#FFF5F5,#FFF);border-radius:var(--radius-xl);padding:20px;border:1px solid rgba(230,32,128,0.08);box-shadow:var(--shadow-md);position:relative;overflow:hidden;cursor:pointer}
+.personal-card::before{content:'';position:absolute;top:0;left:20px;right:20px;height:2px;background:linear-gradient(90deg,transparent,var(--red),transparent);opacity:0.3;border-radius:0 0 2px 2px}
+.personal-card__bg{position:absolute;inset:0;opacity:0.04;background:radial-gradient(circle at 30% 20%,#E62080,transparent 60%),radial-gradient(circle at 70% 80%,#B80E60,transparent 60%);pointer-events:none}
+.personal-card__top{display:flex;align-items:center;justify-content:space-between;position:relative;z-index:1}
+.personal-card__user{display:flex;align-items:center;gap:10px}
+.personal-card__avatar{width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#E62080,#B80E60);color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700}
+.personal-card__name{font-size:17px;font-weight:700}
+.personal-card__college{font-size:11px;color:var(--txt3)}
+.personal-card__switch{display:flex;align-items:center;gap:4px;padding:6px 12px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius-pill);font-size:11px;color:var(--txt2);cursor:pointer;z-index:1}
+.personal-card__tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;position:relative;z-index:1}
+.personal-card__bio{font-size:13px;color:var(--txt2);margin-top:8px;position:relative;z-index:1}
+
+/* Carousel */
+.carousel{position:relative;height:300px;perspective:1200px;overflow:hidden}
+.carousel__card{position:absolute;width:295px;left:50%;top:0;height:100%;transform-origin:center center;will-change:transform;backface-visibility:hidden;transition:transform 0.45s var(--spring),opacity 0.35s;pointer-events:none}
+.carousel__card--active{z-index:5;pointer-events:auto;transform:translateX(-50%) scale(1);opacity:1}
+.carousel__card--left{z-index:3;transform:translateX(calc(-50% - 130px)) scale(0.88);opacity:0.5}
+.carousel__card--right{z-index:3;transform:translateX(calc(-50% + 130px)) scale(0.88);opacity:0.5}
+.carousel__card--far{z-index:1;opacity:0}
+.carousel-dots{display:flex;justify-content:center;gap:8px;margin-top:6px}
+.carousel-dot{width:6px;height:6px;border-radius:3px;background:var(--txt3);opacity:0.3;transition:all 0.3s;cursor:pointer;border:none}
+.carousel-dot--active{opacity:1;background:var(--red);width:18px}
+
+.ccard{padding:16px 14px 12px;width:100%;height:100%;display:flex;flex-direction:column;gap:6px;background:var(--card);border-radius:var(--radius-xl);border:1px solid var(--border);box-shadow:var(--shadow-md)}
+.ccard__top{display:flex;align-items:center;justify-content:space-between}
+.ccard__user{display:flex;align-items:center;gap:8px}
+.ccard__avatar{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#E62080,#B80E60);color:#fff;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:700;flex-shrink:0}
+.ccard__name{font-size:15px;font-weight:700}
+.ccard__college{font-size:10px;color:var(--txt3)}
+.ccard__match{font-size:36px;font-weight:800;letter-spacing:-1px;color:var(--red);line-height:1}
+.ccard__match span{font-size:15px;font-weight:600}
+.ccard__tags{display:flex;flex-wrap:wrap;gap:3px}
+.ccard__reasons{display:flex;flex-direction:column;gap:1px;padding:5px 8px;background:var(--red-light);border-radius:var(--radius-sm);font-size:10px;color:var(--txt2)}
+.ccard__reasons span::before{content:'✓ ';color:var(--red);font-weight:700}
+.ccard__actions{display:flex;gap:8px;margin-top:auto}
+
+/* Publish CTA */
+.publish-cta{background:linear-gradient(145deg,#E62080,#B80E60);border-radius:var(--radius-xl);padding:16px 18px;color:#fff;cursor:pointer;margin-top:4px}
+.publish-cta__title{font-size:16px;font-weight:700}
+.publish-cta__sub{font-size:13px;opacity:0.85;margin-top:4px}
+.publish-cta__btn{margin-top:8px;display:inline-flex;align-items:center;gap:6px;padding:7px 14px;background:rgba(255,255,255,0.2);border-radius:var(--radius-pill);font-size:13px;font-weight:600;color:#fff}
+
+/* Card scroll */
+.card-scroll{display:flex;gap:14px;overflow-x:auto;padding:2px var(--mx) 8px;margin:0 calc(var(--mx)*-1);scroll-snap-type:x mandatory}
+.card-scroll::-webkit-scrollbar{display:none}
+.card-scroll>*{scroll-snap-align:start;min-width:250px;flex-shrink:0}
+
+/* Section header */
+.sec-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:2px}
+.sec-hd__title{font-size:17px;font-weight:600;letter-spacing:-0.3px}
+.sec-hd__more{font-size:13px;color:var(--red);font-weight:500;cursor:pointer}
+
+/* AI Insight */
+.ai-insight{background:linear-gradient(135deg,#FDF1F3,#FFF5F5);border-radius:var(--radius-xl);padding:16px;border:1px solid rgba(165,30,60,0.08);position:relative;overflow:hidden}
+.ai-insight::before{content:'';position:absolute;top:0;left:16px;right:16px;height:2px;background:var(--red);border-radius:0 0 2px 2px;opacity:0.25}
+
+/* ============================================================
+   EXPLORE
+   ============================================================ */
+.explore-greet{display:flex;align-items:center;gap:10px;padding:4px 0}
+.explore-greet__avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#E62080,#B80E60);color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700}
+.explore-greet__hi{font-size:17px;font-weight:700}
+
+.seg-control{display:flex;background:#E5E5EA;border-radius:8px;padding:2px}
+.seg-control__tab{flex:1;text-align:center;padding:7px 0;border-radius:7px;font-size:14px;font-weight:500;color:var(--txt);cursor:pointer;border:none;background:none;font-family:inherit;transition:all 0.2s}
+.seg-control__tab--active{background:#fff;font-weight:600;box-shadow:0 1px 3px rgba(0,0,0,0.08)}
+
+.masonry{columns:2;column-gap:10px}.masonry>*{break-inside:avoid;margin-bottom:10px}
+.grid-card{padding:12px;display:flex;flex-direction:column;gap:6px;background:var(--card);border-radius:var(--radius-lg);border:1px solid var(--border);cursor:pointer;transition:all 0.2s}
+.grid-card:active{transform:scale(0.98)}
+.grid-card__top{display:flex;align-items:center;gap:8px}
+.grid-card__avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#E62080,#B80E60);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;flex-shrink:0}
+.grid-card__name{font-size:14px;font-weight:600}
+.grid-card__college{font-size:10px;color:var(--txt3)}
+.grid-card__match{font-size:14px;font-weight:700;color:var(--red)}
+.grid-card__tags{display:flex;flex-wrap:wrap;gap:3px;font-size:11px}
+
+.pcard{padding:16px;display:flex;flex-direction:column;gap:10px;background:var(--card);border-radius:var(--radius-lg);border:1px solid var(--border);cursor:pointer;transition:all 0.2s}
+.pcard:active{transform:scale(0.985)}
+.pcard__name{font-size:16px;font-weight:600}
+.pcard__brief{font-size:13px;color:var(--txt2);line-height:1.5}
+.pcard__footer{display:flex;align-items:center;justify-content:space-between;gap:8px}
+
+
+
+/* ============================================================
+   AI CHAT (小荔页)
+   ============================================================ */
+.chat-hero{display:flex;flex-direction:column;align-items:center;padding:32px 20px 20px;text-align:center}
+.chat-hero img{width:72px;height:72px;border-radius:50%;object-fit:cover;margin-bottom:12px}
+.chat-hero__title{font-size:20px;font-weight:700;margin-bottom:4px}
+.chat-hero__sub{font-size:14px;color:var(--txt2)}
+.chat-hero__tools{display:flex;gap:12px;margin-top:12px}
+.chat-hero__tool{width:36px;height:36px;border-radius:50%;background:var(--card);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:16px;cursor:pointer}
+.chat-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 var(--mx)}
+.chat-action{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:20px 16px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg);font-size:13px;font-weight:600;cursor:pointer;transition:all 0.2s}
+.chat-action:active{background:var(--bg);border-color:var(--red)}
+.chat-action__icon{font-size:28px}
+.chat-history{padding:8px 0}
+.chat-history-item{display:flex;align-items:center;gap:10px;padding:12px 14px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg);cursor:pointer;transition:all 0.2s}
+.chat-history-item:active{background:var(--bg)}
+.chat-history-item__icon{width:32px;height:32px;border-radius:50%;background:var(--red-light);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.chat-history-item__title{font-size:13px;font-weight:500;color:var(--txt);flex:1}
+.chat-history-item__time{font-size:11px;color:var(--txt3);flex-shrink:0}
+.chat-bubbles{flex:1;overflow-y:auto;padding:12px var(--mx);display:flex;flex-direction:column;gap:8px}
+.chat-bubble{display:flex;gap:8px;max-width:82%}
+.chat-bubble--user{align-self:flex-end;flex-direction:row-reverse}
+.chat-bubble--ai{align-self:flex-start}
+.chat-bubble__avatar{width:30px;height:30px;border-radius:50%;flex-shrink:0;overflow:hidden}
+.chat-bubble__avatar img{width:100%;height:100%;object-fit:cover}
+.chat-bubble__text{padding:10px 14px;border-radius:16px;font-size:13px;line-height:1.5}
+.chat-bubble--user .chat-bubble__text{background:var(--red);color:#fff;border-bottom-right-radius:4px}
+.chat-bubble--ai .chat-bubble__text{background:var(--card);color:var(--txt);border:1px solid var(--border);border-bottom-left-radius:4px}
+.chat-loading{display:flex;gap:4px;padding:6px 0}
+.chat-loading span{width:5px;height:5px;border-radius:50%;background:var(--txt3);animation:dotBounce 1.2s infinite}
+.chat-loading span:nth-child(2){animation-delay:0.2s}.chat-loading span:nth-child(3){animation-delay:0.4s}
+@keyframes dotBounce{0%,60%,100%{transform:translateY(0);opacity:0.3}30%{transform:translateY(-5px);opacity:1}}
+.chat-quick{display:flex;gap:8px;overflow-x:auto;padding:8px var(--mx);background:var(--card);border-top:1px solid var(--border)}
+.chat-quick::-webkit-scrollbar{display:none}
+.chat-quick__chip{display:flex;align-items:center;gap:5px;padding:7px 12px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-pill);font-size:12px;font-weight:500;cursor:pointer;white-space:nowrap;flex-shrink:0}
+.chat-input-bar{display:flex;align-items:center;gap:8px;padding:8px var(--mx);background:var(--card);border-top:1px solid var(--border)}
+.chat-input{flex:1;height:38px;padding:0 14px;border:1.5px solid var(--border);border-radius:20px;font-size:14px;font-family:inherit;background:var(--bg);outline:none}
+.chat-input:focus{border-color:var(--red)}
+.chat-send{width:36px;height:36px;border-radius:50%;border:none;background:var(--red);color:#fff;font-size:16px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+
+/* ============================================================
+   MESSAGES
+   ============================================================ */
+.msg-stats{display:flex;justify-content:space-around;padding:4px 0 8px}
+.msg-stat{text-align:center}
+.msg-stat__num{font-size:28px;font-weight:800;color:var(--txt)}
+.msg-stat__label{font-size:11px;color:var(--txt3);margin-top:2px}
+.msg-circles{display:flex;justify-content:space-around;padding:8px 0}
+.msg-circle{width:80px;height:80px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;border:none;font-family:inherit;transition:all 0.2s;background:var(--card);border:1.5px solid var(--border);padding:4px}
+.msg-circle--active{background:var(--red);color:#fff;border-color:var(--red)}
+.msg-circle--active .msg-circle__num{color:#fff}
+.msg-circle__icon{font-size:24px;margin-bottom:0}
+.msg-circle__num{font-size:14px;font-weight:700;color:var(--txt);margin:0}
+.msg-circle__label{font-size:11px;font-weight:500;margin-top:0}
+.msg-menu{margin-top:12px}
+.msg-menu__item{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:var(--card);border:1px solid var(--border);cursor:pointer;transition:all 0.2s}
+.msg-menu__item:first-child{border-radius:var(--radius-lg) var(--radius-lg) 0 0}
+.msg-menu__item:last-child{border-radius:0 0 var(--radius-lg) var(--radius-lg)}
+.msg-menu__item:active{background:var(--bg)}
+
+/* ============================================================
+   PROFILE
+   ============================================================ */
+.profile-bg{height:350px;background:linear-gradient(135deg,#FDF1F3,#FFF5F5,#FDF1F3);border-radius:0 0 var(--radius-xl) var(--radius-xl);position:relative;margin:0 calc(var(--mx)*-1);margin-bottom:-160px;z-index:0}
+.profile-avatar{width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,#E62080,#B80E60);color:#fff;display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:700;margin:-100px auto 0 auto;position:relative;z-index:1;border:3px solid #fff;box-shadow:var(--shadow-sm)}
+.profile-info{text-align:center;padding:8px 0 12px;position:relative;z-index:1}
+.profile-name{font-size:18px;font-weight:700}
+.profile-college{font-size:13px;color:var(--txt3);margin-top:2px}
+.profile-bio{font-size:14px;color:var(--txt2);margin-top:4px}
+.menu-item{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:var(--card);border:1px solid var(--border);cursor:pointer;transition:all 0.2s}
+.menu-item:first-child{border-radius:var(--radius-lg) var(--radius-lg) 0 0}
+.menu-item:last-child{border-radius:0 0 var(--radius-lg) var(--radius-lg)}
+.menu-item:active{background:var(--bg)}
+.menu-item__left{display:flex;align-items:center;gap:10px}
+
+/* Filter */
+.search-bar{position:relative}.search-bar input{width:100%;height:40px;padding:0 14px 0 34px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:14px;font-family:inherit;background:var(--card);outline:none}.search-bar input:focus{border-color:var(--red)}.search-bar span{position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:14px;color:var(--txt3)}
+.filter-row{display:flex;gap:8px;overflow-x:auto;padding:2px 0}.filter-row::-webkit-scrollbar{display:none}
+.filter-chip{padding:6px 12px;border-radius:var(--radius-pill);font-size:12px;font-weight:500;border:1.5px solid var(--border);background:var(--card);color:var(--txt2);cursor:pointer;white-space:nowrap;flex-shrink:0;transition:all 0.2s}
+.filter-chip--active{background:var(--red);color:#fff;border-color:var(--red)}
+.state-empty{display:flex;flex-direction:column;align-items:center;padding:40px 20px;text-align:center;gap:10px}
+.state-empty__icon{font-size:40px;opacity:0.5}.state-empty__title{font-size:16px;font-weight:600}.state-empty__desc{font-size:13px;color:var(--txt3);max-width:240px}
+
+/* Drawer */
+.drawer-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.3);z-index:200;opacity:0;pointer-events:none;transition:opacity 0.3s}
+.drawer{position:fixed;bottom:0;left:50%;transform:translateX(-50%) translateY(100%);width:375px;background:#fff;border-radius:20px 20px 0 0;z-index:201;transition:transform 0.35s var(--spring);padding:16px 20px 24px;box-shadow:0 -8px 40px rgba(0,0,0,0.1)}
+</style>
+</head>
+<body>
+<div class="phone-outer"><div class="phone-frame">
+<div class="dynamic-island"></div>
+<div class="status-bar"><span class="status-bar__time">9:41</span><span class="status-icons"><svg viewBox="0 0 18 12" width="16" height="10"><rect x="0" y="7" width="3" height="5" rx="0.5" fill="#1A1A1A"/><rect x="5" y="5" width="3" height="7" rx="0.5" fill="#1A1A1A"/><rect x="10" y="2" width="3" height="10" rx="0.5" fill="#1A1A1A"/><rect x="15" y="0" width="3" height="12" rx="0.5" fill="#1A1A1A"/></svg> <span>5G</span> <svg viewBox="0 0 25 12" width="22" height="10"><rect x="0" y="0" width="21" height="12" rx="2" stroke="#1A1A1A" stroke-width="1.5" fill="none"/><rect x="23" y="4" width="2" height="4" rx="0.5" fill="#1A1A1A"/><rect x="2" y="2" width="14" height="8" rx="1" fill="#10B981"/></svg></span></div>
+
+<div class="app-content">
+<!-- ============================================================
+     PAGE 1: 首页
+     ============================================================ -->
+<section class="page page--active" id="page-home"><div class="page__content">
+  <div class="home-greet"><div class="home-greet__left"><div class="home-avatar" id="hm-avatar">林</div><div class="home-hi">HI！<span id="hm-name">林小雨</span></div></div><div class="home-notify" data-action="nav:messages"><img src="消息提醒图标.png" style="width:20px;height:20px;object-fit:contain"></div></div>
+  <h1 class="hero-title">今天想找什么新机会</h1>
+  <div class="ai-search"><span style="font-size:14px;color:var(--txt3)"><img src="放大镜.png" style="width:20px;height:20px;object-fit:contain"></span><input class="ai-search__input" placeholder="搜索项目、技能、队友"><button class="ai-search__btn" data-action="nav:ai-chat"><img src="小荔图标.png" style="width:16px;height:16px;object-fit:contain;display:inline-block;vertical-align:middle;margin-right:4px"> 问问</button></div>
+
+  <!-- 个人名片推荐 (carousel) -->
+  <div><div class="sec-hd"><div class="sec-hd__title"><img src="小荔图标.png" style="width:28px;height:28px;object-fit:contain;display:inline-block;vertical-align:middle;margin-right:6px"> 个人名片推荐</div><span class="sec-hd__more" data-action="nav:explore">查看全部 ›</span></div>
+  <div class="carousel" id="carousel"><div id="carousel-track"></div></div><div class="carousel-dots" id="carousel-dots"></div></div>
+
+  <!-- 发布项目 -->
+  <div class="publish-cta" data-action="go-create-project"><div class="publish-cta__title">发布项目/项目想法</div><div class="publish-cta__sub">让 AI 分析项目需求，匹配合适队友</div><span class="publish-cta__btn">发布项目 ›</span></div>
+
+  <!-- 热门项目 -->
+  <div><div class="sec-hd"><div class="sec-hd__title"><img src="热门图标.png" style="width:20px;height:20px;object-fit:contain;display:inline-block;vertical-align:middle;margin-right:6px"> 热门项目</div><span class="sec-hd__more" data-action="nav:explore">查看全部 ›</span></div>
+  <div class="card-scroll" id="home-projects"></div></div>
+
+  <!-- AI推荐 -->
+  <div class="ai-insight"><div class="sec-hd__title" style="margin-bottom:8px"><img src="小荔图标.png" style="width:20px;height:20px;object-fit:contain;display:inline-block;vertical-align:middle;margin-right:6px"> AI推荐</div><p class="t-body" id="ai-insight" style="color:var(--txt)"></p><p class="t-caption mt-4" id="ai-insight-stat"></p><button class="btn btn--primary btn--sm mt-8" data-action="nav:explore">查看推荐项目</button></div>
+
+  <!-- 技能学习推荐 -->
+  <div><div class="sec-hd"><div class="sec-hd__title"><img src="技能图标.png" style="width:20px;height:20px;object-fit:contain;display:inline-block;vertical-align:middle;margin-right:6px"> 技能学习</div><span class="sec-hd__more">查看全部 ›</span></div>
+  <div class="card-scroll" id="home-learning">
+    <div class="card" style="display:flex;flex-direction:column;gap:10px;padding:14px">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#667EEA,#764BA2);display:flex;align-items:center;justify-content:center"><img src="技能图标.png" style="width:24px;height:24px;object-fit:contain"></div>
+        <div><div style="font-size:14px;font-weight:600">React 进阶实战</div><div style="font-size:11px;color:var(--txt3)">500+ 人正在学习</div></div>
+      </div>
+      <div class="flex-row gap-4 mt-4">
+        <span class="tag tag--skill">React</span>
+        <span class="tag tag--skill">TypeScript</span>
+        <span class="tag tag--skill">Hooks</span>
+      </div>
+      <button class="btn btn--secondary btn--sm w-full mt-4">开始学习</button>
+    </div>
+    <div class="card" style="display:flex;flex-direction:column;gap:10px;padding:14px">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#F093FB,#F5576C);display:flex;align-items:center;justify-content:center"><img src="小荔图标.png" style="width:24px;height:24px;object-fit:contain"></div>
+        <div><div style="font-size:14px;font-weight:600">AI 大模型应用</div><div style="font-size:11px;color:var(--txt3)">320+ 人正在学习</div></div>
+      </div>
+      <div class="flex-row gap-4 mt-4">
+        <span class="tag tag--skill">LLM</span>
+        <span class="tag tag--skill">Python</span>
+        <span class="tag tag--skill">API</span>
+      </div>
+      <button class="btn btn--secondary btn--sm w-full mt-4">开始学习</button>
+    </div>
+    <div class="card" style="display:flex;flex-direction:column;gap:10px;padding:14px">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#4FACFE,#00F2FE);display:flex;align-items:center;justify-content:center"><img src="灵感图标.png" style="width:24px;height:24px;object-fit:contain"></div>
+        <div><div style="font-size:14px;font-weight:600">UI/UX 设计入门</div><div style="font-size:11px;color:var(--txt3)">450+ 人正在学习</div></div>
+      </div>
+      <div class="flex-row gap-4 mt-4">
+        <span class="tag tag--skill">Figma</span>
+        <span class="tag tag--skill">设计系统</span>
+        <span class="tag tag--skill">用户体验</span>
+      </div>
+      <button class="btn btn--secondary btn--sm w-full mt-4">开始学习</button>
+    </div>
+  </div></div>
+
+  <!-- 社区动态 -->
+  <div><div class="sec-hd"><div class="sec-hd__title"><img src="消息图标.png" style="width:20px;height:20px;object-fit:contain;display:inline-block;vertical-align:middle;margin-right:6px"> 社区动态</div><span class="sec-hd__more">查看全部 ›</span></div>
+  <div style="display:flex;flex-direction:column;gap:10px">
+    <div class="card" style="display:flex;gap:12px;padding:14px">
+      <div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#E62080,#B80E60);color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600">张</div>
+      <div style="flex:1">
+        <div style="display:flex;align-items:center;gap:6px">
+          <span style="font-size:14px;font-weight:600">张浩然</span>
+          <span class="tag tag--status-success" style="font-size:10px">刚刚</span>
+        </div>
+        <p style="font-size:13px;color:var(--txt2);margin-top:2px">完成了「AI大模型应用」课程学习，获得认证徽章</p>
+        <div class="flex-row gap-4 mt-4">
+          <span style="font-size:12px;color:var(--txt3)">点赞 23</span>
+          <span style="font-size:12px;color:var(--txt3)">评论 5</span>
+        </div>
+      </div>
+    </div>
+    <div class="card" style="display:flex;gap:12px;padding:14px">
+      <div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#E62080,#B80E60);color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600">陈</div>
+      <div style="flex:1">
+        <div style="display:flex;align-items:center;gap:6px">
+          <span style="font-size:14px;font-weight:600">陈思远</span>
+          <span class="tag tag--status-info" style="font-size:10px">1小时前</span>
+        </div>
+        <p style="font-size:13px;color:var(--txt2);margin-top:2px">发布了新项目「校园二手交易平台」，期待志同道合的小伙伴加入！🚀</p>
+        <div class="flex-row gap-4 mt-4">
+          <span style="font-size:12px;color:var(--txt3)">点赞 45</span>
+          <span style="font-size:12px;color:var(--txt3)">评论 12</span>
+        </div>
+      </div>
+    </div>
+    <div class="card" style="display:flex;gap:12px;padding:14px">
+      <div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#E62080,#B80E60);color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600">王</div>
+      <div style="flex:1">
+        <div style="display:flex;align-items:center;gap:6px">
+          <span style="font-size:14px;font-weight:600">王语晴</span>
+          <span class="tag tag--status-info" style="font-size:10px">3小时前</span>
+        </div>
+        <p style="font-size:13px;color:var(--txt2);margin-top:2px">分享了一篇关于「微服务架构设计」的技术文章，欢迎一起讨论 💻</p>
+        <div class="flex-row gap-4 mt-4">
+          <span style="font-size:12px;color:var(--txt3)">点赞 67</span>
+          <span style="font-size:12px;color:var(--txt3)">评论 18</span>
+        </div>
+      </div>
+    </div>
+  </div></div>
+</div></section>
+
+<!-- ============================================================
+     PAGE 2: 广场
+     ============================================================ -->
+<section class="page" id="page-explore"><div class="page__content" style="gap:14px">
+  <div class="explore-greet"><div class="explore-greet__avatar" id="ex-avatar">林</div><div class="explore-greet__hi">HEY，<span id="ex-name">林小雨</span>!</div></div>
+  <div class="seg-control" id="explore-tabs"><button class="seg-control__tab seg-control__tab--active" data-action="explore-tab" data-tab="cards">名片广场</button><button class="seg-control__tab" data-action="explore-tab" data-tab="projects">项目广场</button></div>
+  <div id="explore-cards">
+    <div class="search-bar"><span><img src="放大镜.png" style="width:20px;height:20px;object-fit:contain"></span><input placeholder="搜索技能、专业、兴趣..." id="card-search"><button class="ai-search__btn" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);padding:6px 10px;font-size:11px" data-action="nav:ai-chat"><img src="小荔图标.png" style="width:14px;height:14px;object-fit:contain"></button></div>
+    <div class="filter-row mt-8" id="card-filters"><span class="filter-chip filter-chip--active" data-filter="all">全部</span><span class="filter-chip" data-filter="前端开发">前端开发</span><span class="filter-chip" data-filter="AI工程">AI工程</span><span class="filter-chip" data-filter="产品经理">产品经理</span><span class="filter-chip" data-filter="UI设计">UI设计</span><span class="filter-chip" data-filter="找队">正在找队</span></div>
+    <div class="masonry mt-8" id="explore-card-list"></div><div class="state-empty" id="cards-empty" style="display:none"><span class="state-empty__icon">🪪</span><p class="state-empty__title">没有匹配的名片</p><p class="state-empty__desc">试试调整筛选条件</p></div>
+  </div>
+  <div id="explore-projects" style="display:none">
+    <div class="search-bar"><span><img src="放大镜.png" style="width:20px;height:20px;object-fit:contain"></span><input placeholder="搜索项目..." id="project-search"><button class="ai-search__btn" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);padding:6px 10px;font-size:11px" data-action="nav:ai-chat"><img src="小荔图标.png" style="width:14px;height:14px;object-fit:contain"></button></div>
+    <div class="filter-row mt-8" id="project-filters"><span class="filter-chip filter-chip--active" data-filter="all">全部</span><span class="filter-chip" data-filter="创意项目">创意项目</span><span class="filter-chip" data-filter="大创项目">大创项目</span><span class="filter-chip" data-filter="课程作业">课程作业</span><span class="filter-chip" data-filter="recruiting">招募中</span></div>
+    <div id="explore-project-list" class="mt-8" style="display:flex;flex-direction:column;gap:10px"></div><div class="state-empty" id="projects-empty" style="display:none"><span class="state-empty__icon">📋</span><p class="state-empty__title">没有匹配的项目</p><p class="state-empty__desc">试试调整筛选条件</p></div>
+  </div>
+
+</div></section>
+
+<!-- ============================================================
+     PAGE 3: 小荔页 (AI Chat)
+     ============================================================ -->
+<section class="page" id="page-ai-chat">
+  <div style="padding:8px var(--mx);background:var(--bg)"><button style="width:32px;height:32px;border-radius:50%;border:none;background:var(--card);font-size:18px;cursor:pointer;box-shadow:var(--shadow-sm)" data-action="go-back">‹</button></div>
+  <div class="chat-hero"><img src="小荔.jpg" alt="小荔"><div class="chat-hero__title">Come and chat with 小荔！</div><div class="chat-hero__sub">你的组队助手</div>
+  </div>
+  <div class="chat-actions"><div class="chat-action" data-action="chat-quick" data-msg="生成AI名片"><span class="chat-action__icon"><img src="小荔图标.png" style="width:20px;height:20px;object-fit:contain"></span>生成名片</div><div class="chat-action" data-action="chat-quick" data-msg="分析项目需求"><span class="chat-action__icon"><img src="文档图标.png" style="width:20px;height:20px;object-fit:contain"></span>分析项目需求</div><div class="chat-action" data-action="chat-quick" data-msg="匹配推荐队友"><span class="chat-action__icon"><img src="灵感图标.png" style="width:20px;height:20px;object-fit:contain"></span>匹配推荐队友</div><div class="chat-action" data-action="chat-quick" data-msg="团队诊断"><span class="chat-action__icon"><img src="警告图标.png" style="width:20px;height:20px;object-fit:contain"></span>团队诊断</div></div>
+  <div class="chat-history">
+    <div style="padding:12px var(--mx);font-size:12px;color:var(--txt3);font-weight:500">最近对话</div>
+    <div style="display:flex;flex-direction:column;gap:8px;padding:0 var(--mx)" id="chat-history-list"></div>
+  </div>
+  <div class="chat-bubbles" id="chat-bubbles"></div>
+  <div class="chat-quick"><div class="chat-quick__chip" data-action="chat-quick" data-msg="帮我找队友"><img src="放大镜.png" style="width:16px;height:16px;object-fit:contain;display:inline-block;vertical-align:middle;margin-right:4px"> 找队友</div><div class="chat-quick__chip" data-action="chat-quick" data-msg="帮我写邀请话术">写邀请</div><div class="chat-quick__chip" data-action="chat-quick" data-msg="拆解项目需求">拆项目</div><div class="chat-quick__chip" data-action="chat-quick" data-msg="优化名片">优化名片</div></div>
+  <div class="chat-input-bar"><input class="chat-input" id="chat-input" placeholder="chat with 小荔"><button class="chat-send" data-action="chat-send">↑</button></div>
+</section>
+
+<!-- ============================================================
+     PAGE 4: 消息页
+     ============================================================ -->
+<section class="page" id="page-messages"><div class="page__content" style="gap:14px">
+  <h2 class="t-title">消息</h2>
+  <div class="msg-stats"><div class="msg-stat"><div class="msg-stat__num" id="msg-stat-projects">3</div><div class="msg-stat__label">我的项目</div></div><div class="msg-stat"><div class="msg-stat__num" id="msg-stat-invites">4</div><div class="msg-stat__label">邀请消息</div></div></div>
+  <div class="msg-circles"><button class="msg-circle msg-circle--active" data-action="msg-circle" data-tab="invite"><span class="msg-circle__icon"><img src="组队图标.png" style="width:24px;height:24px;object-fit:contain"></span><span class="msg-circle__num" id="circle-invite">4</span><span class="msg-circle__label">组队</span></button><button class="msg-circle" data-action="msg-circle" data-tab="friend"><span class="msg-circle__icon"><img src="好友图标.png" style="width:24px;height:24px;object-fit:contain"></span><span class="msg-circle__num">3</span><span class="msg-circle__label">好友</span></button><button class="msg-circle" data-action="msg-circle" data-tab="system"><span class="msg-circle__icon"><img src="消息提醒图标.png" style="width:24px;height:24px;object-fit:contain"></span><span class="msg-circle__num">3</span><span class="msg-circle__label">系统</span></button><button class="msg-circle" data-action="msg-circle" data-tab="ai"><span class="msg-circle__icon"><img src="小荔图标.png" style="width:24px;height:24px;object-fit:contain"></span><span class="msg-circle__num">2</span><span class="msg-circle__label">小荔</span></button></div>
+  <div id="msg-content" style="display:flex;flex-direction:column;gap:8px"></div>
+</div></section>
+
+<!-- ============================================================
+     PAGE 5: 我的
+     ============================================================ -->
+<section class="page" id="page-profile"><div class="page__content" style="padding-top:0">
+  <div class="profile-bg"></div>
+  <div class="profile-avatar" id="pf-avatar">林</div>
+  <div class="profile-info"><div class="profile-name" id="pf-name">林小雨</div><div class="profile-college" id="pf-college">复旦大学 · 计算机学院 · 大三</div><div class="profile-bio" id="pf-bio">全栈开发，热爱开源与产品设计</div><div class="flex-row" style="justify-content:center;gap:6px;margin-top:12px;flex-wrap:wrap" id="pf-tags"></div></div>
+  <button class="btn btn--secondary btn--block mt-12" data-action="open-user-drawer" style="border:1.5px solid var(--border)">切换账号</button>
+  <div style="display:flex;flex-direction:column;gap:0;margin-top:20px"><div class="menu-item" data-action="nav:my-card"><div class="menu-item__left"><span><img src="小荔图标.png" style="width:20px;height:20px;object-fit:contain"></span><span>我的名片</span></div><span style="color:var(--txt3)">›</span></div><div class="menu-item" data-action="nav:my-projects"><div class="menu-item__left"><span><img src="文档图标.png" style="width:20px;height:20px;object-fit:contain"></span><span>我的项目</span></div><span style="color:var(--txt3)">›</span></div><div class="menu-item" data-action="nav:messages-invites"><div class="menu-item__left"><span><img src="消息图标.png" style="width:20px;height:20px;object-fit:contain"></span><span>我的邀请</span></div><span style="color:var(--txt3)">›</span></div><div class="menu-item" data-action="nav:my-favorites"><div class="menu-item__left"><span><img src="收藏图标.png" style="width:20px;height:20px;object-fit:contain"></span><span>我的收藏</span></div><span style="color:var(--txt3)">›</span></div><div class="menu-item" data-action="nav:profile-info"><div class="menu-item__left"><span><img src="个人页图标.png" style="width:20px;height:20px;object-fit:contain"></span><span>个人资料</span></div><span style="color:var(--txt3)">›</span></div><div class="menu-item" data-action="nav:settings"><div class="menu-item__left"><span><img src="设置图标.png" style="width:20px;height:20px;object-fit:contain"></span><span>设置</span></div><span style="color:var(--txt3)">›</span></div><div class="menu-item" style="border-radius:0 0 20px 20px"><div class="menu-item__left"><span><img src="退出图标.png" style="width:20px;height:20px;object-fit:contain"></span><span style="color:var(--red)">退出登录</span></div><span style="color:var(--red)">›</span></div></div>
+</div></section>
+
+<!-- Card Detail Page -->
+<section class="page" id="page-card-detail"><div class="app-content" style="height:auto;overflow-y:auto">
+  <div style="display:flex;align-items:center;padding:12px var(--mx);gap:8px;background:#fff;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50"><button style="width:32px;height:32px;border-radius:50%;border:none;background:var(--bg);font-size:18px;cursor:pointer" data-action="close-detail">‹</button><span style="font-size:16px;font-weight:600" id="cd-name">名片详情</span></div>
+  <div style="padding:0 var(--mx) 80px;display:flex;flex-direction:column;gap:16px">
+    <div class="profile-bg" style="height:350px;margin:0 calc(var(--mx)*-1) -160px;z-index:0"></div>
+    <div style="width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,#E62080,#B80E60);color:#fff;display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:700;margin:-100px auto 0 auto;border:3px solid #fff;box-shadow:var(--shadow-sm);z-index:1;position:relative" id="cd-avatar">林</div>
+    <div style="text-align:center;padding:8px 0 12px;position:relative;z-index:1"><div style="font-size:18px;font-weight:700" id="cd-fullname">林小雨</div><div style="font-size:13px;color:var(--txt3);margin-top:2px" id="cd-college">复旦大学 · 计算机学院 · 大三</div><div style="font-size:14px;color:var(--txt2);margin-top:6px;line-height:1.5" id="cd-bio">全栈开发，热爱开源与产品设计</div><div class="flex-row" style="justify-content:center;gap:6px;margin-top:12px;flex-wrap:wrap" id="cd-tags"></div></div>
+    <div class="card" id="cd-info"></div>
+    <button class="btn btn--primary btn--block" id="cd-invite-btn"><img src="组队图标.png" style="width:16px;height:16px;object-fit:contain;display:inline-block;vertical-align:middle;margin-right:6px"> 邀请组队</button>
+  </div>
+</div></section>
+
+<!-- Project Detail Page -->
+<section class="page" id="page-project-detail"><div class="app-content" style="height:auto;overflow-y:auto">
+  <div style="display:flex;align-items:center;padding:12px var(--mx);gap:8px;background:#fff;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50"><button style="width:32px;height:32px;border-radius:50%;border:none;background:var(--bg);font-size:18px;cursor:pointer" data-action="close-detail">‹</button><span style="font-size:16px;font-weight:600" id="pd-name">项目详情</span></div>
+  <div style="padding:0 var(--mx) 80px;display:flex;flex-direction:column;gap:14px" id="pd-content"></div>
+</div></section>
+
+<!-- Drawer -->
+<div class="drawer-overlay" id="drawer-overlay" data-action="close-drawer"></div>
+<div class="drawer" id="drawer"><div style="font-size:16px;font-weight:600;margin-bottom:12px">切换账号</div><div id="drawer-users" style="display:flex;flex-direction:column;gap:8px"></div></div>
+
+</div>
+
+<!-- Floating Buttons for Explore Page -->
+<div class="explore-fabs-container" id="explore-fabs">
+  <button class="explore-fab" id="fab-card" data-action="go-create-card"><img src="小荔图标.png" style="width:16px;height:16px;object-fit:contain;display:inline-block;vertical-align:middle;margin-right:4px"> 创建名片</button>
+  <button class="explore-fab" id="fab-project" data-action="go-create-project" style="display:none">发布项目</button>
+</div>
+
+<!-- TabBar -->
+<nav class="tabbar" id="tabbar"><button class="tabbar__item tabbar__item--active" data-action="nav:home"><span class="tabbar__icon"><img src="首页图标.png" style="width:24px;height:24px;object-fit:contain"></span><span class="tabbar__label">首页</span></button><button class="tabbar__item" data-action="nav:explore"><span class="tabbar__icon"><img src="广场图标.png" style="width:24px;height:24px;object-fit:contain"></span><span class="tabbar__label">广场</span></button><button class="tabbar__item tabbar__item--ai" data-action="nav:ai-chat"><span class="tabbar__icon"><img src="小荔.jpg" alt="小荔"></span><span class="tabbar__label">小荔</span></button><button class="tabbar__item" data-action="nav:messages"><span class="tabbar__icon"><img src="消息图标.png" style="width:24px;height:24px;object-fit:contain"></span><span class="tabbar__label">消息</span></button><button class="tabbar__item" data-action="nav:profile"><span class="tabbar__icon"><img src="个人页图标.png" style="width:24px;height:24px;object-fit:contain"></span><span class="tabbar__label">我的</span></button></nav>
+
+</div></div>
+
+<script>
+const DATA={users:[{id:'u1',name:'林小雨',avatar:'林',college:'复旦大学 · 计算机学院',year:'大三',bio:'全栈开发，热爱开源与产品设计，3个项目落地经验',skills:['React','Node.js','Python','UI设计','TypeScript','Vue.js','Git','Docker','PostgreSQL','AWS'],role:'前端开发',status:'available'},{id:'u2',name:'张浩然',avatar:'张',college:'上海交大 · 电子信息学院',year:'研二',bio:'AI 研究方向，NLP/CV 顶会论文 2 篇',skills:['Python','PyTorch','TensorFlow','NLP','Hugging Face','Transformers','LangChain','C++','CUDA','OpenCV'],role:'AI工程师',status:'available'},{id:'u3',name:'陈思远',avatar:'陈',college:'浙江大学 · 设计学院',year:'大三',bio:'产品设计与用户体验研究，Figma 协作达人',skills:['Figma','Sketch','用户研究','交互设计','原型设计','动效设计','用户测试','设计系统','品牌设计','插画'],role:'UI/UX设计师',status:'in-team'},{id:'u4',name:'王语晴',avatar:'王',college:'复旦大学 · 软件学院',year:'大四',bio:'后端架构与分布式系统，Go/K8s 实战',skills:['Go','Java','K8s','微服务','Redis','MySQL','MongoDB','RabbitMQ','gRPC','Linux'],role:'后端开发',status:'available'},{id:'u5',name:'赵一帆',avatar:'赵',college:'南京大学 · 商学院',year:'大三',bio:'产品经理方向，擅长需求分析与数据驱动',skills:['需求分析','项目管理','数据分析','用户调研','竞品分析','产品规划','PRD撰写','A/B测试','数据可视化','Excel高级'],role:'产品经理',status:'available'},{id:'u6',name:'刘子涵',avatar:'刘',college:'同济大学 · 设计创意学院',year:'研一',bio:'视觉设计与品牌策略，插画与动效兼具',skills:['PS','AI','品牌设计','插画','AE','PR','C4D','3D建模','动效设计','平面设计'],role:'视觉设计师',status:'available'},{id:'u7',name:'周子轩',avatar:'周',college:'北京大学 · 智能科学系',year:'研二',bio:'强化学习与多模态方向，顶会一作',skills:['Python','RL','CV','PyTorch','JAX','多模态学习','数学建模','算法竞赛','C++','Linux'],role:'AI工程师',status:'available'},{id:'u8',name:'吴佳怡',avatar:'吴',college:'华东师大 · 心理与认知学院',year:'大四',bio:'用户体验研究员，质性+量化混合研究',skills:['用户研究','访谈','SPSS','可用性测试','问卷设计','用户画像','行为分析','心理学实验','统计分析','质性研究'],role:'用户研究员',status:'available'}],projects:[{id:'p1',name:'CampusHub 校园服务',type:'创意项目',brief:'一站式校园生活平台，整合课表、社团、二手交易',creator:'u1',needs:['后端开发','UI设计'],count:2,status:'recruiting'},{id:'p2',name:'AI 校园心理陪伴',type:'大创项目',brief:'面向大学生压力管理的 AI 情感陪伴助手',creator:'u2',needs:['AI工程师','UI/UX设计师'],count:2,status:'recruiting'},{id:'p3',name:'二手教材交易平台',type:'课程作业',brief:'校园二手教材交易与智能推荐',creator:'u4',needs:['前端开发','UI/UX设计师'],count:2,status:'recruiting'},{id:'p4',name:'CodeMentor 编程导师',type:'创意项目',brief:'AI 驱动的编程学习与代码审查平台',creator:'u1',needs:['AI工程师','产品经理'],count:2,status:'recruiting'},{id:'p5',name:'GreenCampus 绿色校园',type:'大创项目',brief:'校园碳足迹追踪与绿色行为激励',creator:'u5',needs:['后端开发','前端开发','AI工程师'],count:3,status:'recruiting'},{id:'p6',name:'ClassMate 智能课表',type:'课程作业',brief:'AI 驱动的课表管理与学习规划助手',creator:'u7',needs:['前端开发','后端开发'],count:2,status:'recruiting'},{id:'p7',name:'校园食堂客流预测',type:'大创项目',brief:'基于物联网数据的食堂人流预测与推荐',creator:'u4',needs:['AI工程师','产品经理','前端开发'],count:3,status:'recruiting'},{id:'p8',name:'StuTalk 校园匿名社交',type:'创意项目',brief:'面向大学生的匿名兴趣匹配社交平台',creator:'u6',needs:['后端开发','UI/UX设计师','前端开发'],count:3,status:'recruiting'}],invites:[{id:'i1',from:'u2',to:'u1',projectId:'p2',role:'前端开发',msg:'邀请你加入「AI校园心理陪伴」项目，你的前端能力完美匹配',status:'pending',type:'invite',time:'3分钟前'},{id:'i2',from:'u4',to:'u1',projectId:'p3',role:'前端开发',msg:'邀请你加入「二手教材交易平台」，小程序开发需要你',status:'pending',type:'invite',time:'1小时前'},{id:'i3',from:'u7',to:'u1',projectId:'p6',role:'前端开发',msg:'邀请你加入「ClassMate 智能课表」项目，React 技术栈',status:'pending',type:'invite',time:'2小时前'},{id:'i4',from:'u5',to:'u1',projectId:'p4',role:'前端开发',msg:'邀请你加入「CodeMentor」开源项目，需要前端开发',status:'pending',type:'invite',time:'5小时前'},{id:'i5',from:'u1',to:'u4',projectId:'p1',role:'后端开发',msg:'邀请你加入「CampusHub」项目，Go+K8s 技术栈',status:'accepted',type:'invite',time:'昨天'},{id:'i6',from:'u6',to:'u1',projectId:'p8',role:'前端开发',msg:'邀请你加入「StuTalk」匿名社交项目，React Native',status:'rejected',type:'invite',time:'3天前'},{id:'i7',from:'u8',to:'u1',projectId:'p2',role:'用户研究员',msg:'邀请你加入「AI校园心理陪伴」，需要UX研究支持',status:'pending',type:'invite',time:'1天前'},{id:'i8',from:'u3',to:'u1',projectId:'p7',role:'前端开发',msg:'邀请你加入「校园食堂客流预测」大创项目',status:'pending',type:'invite',time:'2天前'}]};
+const App={page:'home',prev:'home',user:DATA.users[0],exploreTab:'cards',msgTab:'invite',cardFilter:'all',projectFilter:'all',homeUserIdx:0};
+const $=s=>document.querySelector(s),$$=s=>document.querySelectorAll(s),byId=s=>document.getElementById(s);
+function U(id){return DATA.users.find(u=>u.id===id)}
+function tagHTML(s,v='skill'){return`<span class="tag tag--${v}">${s}</span>`}
+function tagsHTML(arr,v='skill'){return arr.map(s=>tagHTML(s,v)).join('')}
+let tt;function toast(m){const t=byId('toast')||(()=>{const d=document.createElement('div');d.id='toast';d.style.cssText='position:fixed;top:60px;left:50%;transform:translateX(-50%);background:rgba(26,26,26,0.92);color:#fff;padding:10px 20px;border-radius:999px;font-size:14px;font-weight:500;z-index:300;pointer-events:none;opacity:0;transition:all 0.4s';document.body.appendChild(d);return d})();t.textContent=m;t.style.opacity='1';t.style.transform='translateX(-50%) translateY(0)';clearTimeout(tt);tt=setTimeout(()=>{t.style.opacity='0';t.style.transform='translateX(-50%) translateY(-120px)'},1800)}
+
+const tabs=['home','explore','messages','profile'];
+function navigate(page,params={}){App.prev=App.page;App.page=page;$$('.page').forEach(p=>p.classList.remove('page--active'));const t=byId('page-'+page);if(t){t.classList.add('page--active');t.style.animation='none';t.offsetHeight;t.style.animation=''}byId('tabbar').style.display=tabs.includes(page)?'flex':'none';$$('.tabbar__item').forEach(i=>i.classList.remove('tabbar__item--active'));const m={home:0,explore:1,messages:3,profile:4};if(m[page]!==undefined)$$('.tabbar__item')[m[page]].classList.add('tabbar__item--active');
+
+// Toggle floating buttons for explore page
+const exploreFabs=byId('explore-fabs');
+if(page==='explore'){
+  exploreFabs.classList.add('page-explore-active');
+}else{
+  exploreFabs.classList.remove('page-explore-active');
+}
+
+if(page==='home')renderHome();if(page==='explore')renderExplore();if(page==='profile')renderProfile();if(page==='messages')renderMsgContent();}
+function delay(ms){return new Promise(r=>setTimeout(r,ms||1000))}
+
+/* HOME */
+function renderHome(){const u=App.user;byId('hm-avatar').textContent=u.avatar;byId('hm-name').textContent=u.name;byId('ai-insight').innerHTML=`你的能力画像最适合：<b style="color: var(--red)">${u.skills.slice(0,2).join(' · ')}</b>`;byId('ai-insight-stat').textContent=`当前有 ${DATA.projects.filter(p=>p.status==='recruiting').length*3} 个项目正在寻找该角色`;
+  const mates=DATA.users.filter(x=>x.id!==u.id&&x.status==='available');const cdata=mates.map(m=>({...m,pct:78+Math.floor(Math.random()*18)}));buildCarousel(cdata);
+  const projs=DATA.projects.filter(p=>p.status==='recruiting');byId('home-projects').innerHTML=projs.map(p=>`<div class="card" data-action="view-project" data-id="${p.id}" style="display:flex;flex-direction:column;gap:10px"><div class="flex-between"><span style="font-size:15px;font-weight:600">${p.name}</span><span class="tag tag--ai">${p.type}</span></div><p style="font-size:13px;color:var(--txt2)">${p.brief}</p><div class="flex-row gap-6">${p.needs.map(r=>`<span class="tag tag--status-warning">缺：${r}</span>`).join('')}</div><button class="btn btn--primary btn--sm w-full mt-8" data-action="view-project" data-id="${p.id}">查看项目</button></div>`).join('')}
+
+function buildCarousel(data){const track=byId('carousel-track'),dots=byId('carousel-dots');if(!track||!data.length)return;let idx=0;const total=data.length;track.innerHTML=data.map((c,i)=>`<div class="carousel__card" data-cidx="${i}"><div class="ccard"><div class="ccard__top"><div class="ccard__user"><div class="ccard__avatar">${c.avatar}</div><div><div class="ccard__name">${c.name}</div><div class="ccard__college">${c.college} · ${c.year}</div></div></div><div style="text-align:center"><div class="ccard__match">${c.pct}<span>%</span></div></div></div><div class="ccard__tags">${tagsHTML(c.skills.slice(0,3))}</div><div class="ccard__reasons"><span>有校园项目落地经验</span><span>技能与项目高度互补</span><span>当前可投入时间充足</span></div><div class="ccard__actions"><button class="btn btn--text btn--sm" data-action="view-card" data-id="${c.id}">查看详情</button><button class="btn btn--primary btn--sm" data-action="invite-user" data-id="${c.id}">邀请组队</button></div></div></div>`).join('');dots.innerHTML=data.map((_,i)=>`<button class="carousel-dot${i===0?' carousel-dot--active':''}" data-dot="${i}"></button>`).join('');
+  function pos(i){$$('.carousel__card').forEach((c,j)=>{c.classList.remove('carousel__card--active','carousel__card--left','carousel__card--right','carousel__card--far');const d=j-i;if(d===0)c.classList.add('carousel__card--active');else if(d===1)c.classList.add('carousel__card--right');else if(d===-1)c.classList.add('carousel__card--left');else c.classList.add('carousel__card--far')});dots.querySelectorAll('.carousel-dot').forEach((d,j)=>d.classList.toggle('carousel-dot--active',j===i))}
+  function snap(i){if(i<0)i=0;if(i>=total)i=total-1;idx=i;pos(idx)}let sx=0,sy=0,dx=0,dy=0,dr=false,isHorizontal=false;track.addEventListener('touchstart',e=>{sx=e.touches[0].clientX;sy=e.touches[0].clientY;dx=0;dy=0;dr=true;isHorizontal=false},{passive:true});track.addEventListener('touchmove',e=>{if(!dr)return;dx=e.touches[0].clientX-sx;dy=e.touches[0].clientY-sy;if(!isHorizontal&&Math.abs(dy)>Math.abs(dx)){return}isHorizontal=true;$$('.carousel__card').forEach((c,j)=>{const d=j-idx;let o=dx;if(d===0){c.style.transform=`translateX(calc(-50% + ${o}px)) scale(1)`;c.style.opacity=1-Math.abs(o)/400}else if(d===1){c.style.transform=`translateX(calc(-50% + ${130+o}px)) scale(0.88)`;c.style.opacity=0.5+Math.abs(o)/400}else if(d===-1){c.style.transform=`translateX(calc(-50% + ${-130+o}px)) scale(0.88)`;c.style.opacity=0.5+Math.abs(o)/400}c.style.transition='none'})},{passive:true});track.addEventListener('touchend',()=>{dr=false;if(isHorizontal&&Math.abs(dx)>50)snap(dx>0?idx-1:idx+1);else snap(idx);$$('.carousel__card').forEach(c=>c.style.transition='');pos(idx);dx=0;dy=0;isHorizontal=false});dots.addEventListener('click',e=>{const b=e.target.closest('[data-dot]');if(b)snap(parseInt(b.dataset.dot))});track.addEventListener('click',e=>{if(Math.abs(dx)>10)return;const el=e.target.closest('.carousel__card');if(!el||e.target.closest('button'))return;const ci=parseInt(el.dataset.cidx);if(ci===idx){const u=data[ci];toast('查看 '+u.name+' 的名片')}});pos(0)}
+function switchHomeUser(){App.homeUserIdx=(App.homeUserIdx+1)%DATA.users.length;App.user=DATA.users[App.homeUserIdx];renderHome();toast('<img src="好友图标.png" style="width:14px;height:14px;object-fit:contain;display:inline-block;vertical-align:middle;margin-right:4px"> '+App.user.name)}
+
+/* EXPLORE */
+function renderExplore(){
+  const fabCard=byId('fab-card');
+  const fabProject=byId('fab-project');
+  if(App.exploreTab==='cards'){
+    fabCard.style.display='inline-flex';
+    fabProject.style.display='none';
+    renderCards();
+  }else{
+    fabCard.style.display='none';
+    fabProject.style.display='inline-flex';
+    renderProjects();
+  }
+}
+function renderCards(){const s=(byId('card-search')?.value||'').toLowerCase();let us=DATA.users.filter(u=>{if(App.cardFilter==='找队')return u.status==='available';if(App.cardFilter!=='all'&&!u.role.includes(App.cardFilter)&&!u.skills.some(sk=>sk.includes(App.cardFilter)))return false;if(s&&!u.name.includes(s)&&!u.college.includes(s))return false;return true});byId('explore-card-list').innerHTML=us.map(u=>`<div class="grid-card" data-action="view-card" data-id="${u.id}"><div class="grid-card__top"><div class="grid-card__avatar">${u.avatar}</div><div><div class="grid-card__name">${u.name}</div><div class="grid-card__college">${u.college}</div></div></div><div class="grid-card__match">${68+Math.floor(Math.random()*28)}% Match</div><div class="grid-card__tags">${u.skills.slice(0,2).map(s=>tagHTML(s)).join('')}</div></div>`).join('');byId('cards-empty').style.display=us.length?'none':'flex'}
+function renderProjects(){const s=(byId('project-search')?.value||'').toLowerCase();let ps=DATA.projects.filter(p=>{if(App.projectFilter==='recruiting')return p.status==='recruiting';if(App.projectFilter!=='all'&&p.type!==App.projectFilter)return false;if(s&&!p.name.includes(s)&&!p.brief.includes(s))return false;return true});byId('explore-project-list').innerHTML=ps.map(p=>`<div class="pcard" data-action="view-project" data-id="${p.id}"><div class="flex-between"><span class="pcard__name">${p.name}</span><span class="tag tag--status-${p.status==='recruiting'?'info':'neutral'}">${p.status==='recruiting'?'招募中':'已满员'}</span></div><p class="pcard__brief">${p.brief}</p><div class="flex-row gap-6">${p.needs.map(r=>`<span class="tag tag--status-warning">缺：${r}</span>`).join('')}</div><div class="pcard__footer"><span style="font-size:13px;color:var(--red);font-weight:700">${70+Math.floor(Math.random()*25)}% Match</span><span class="t-caption">${p.count+1}/${p.count+2}人</span></div></div>`).join('');byId('projects-empty').style.display=ps.length?'none':'flex'}
+
+/* MESSAGES */
+function renderMsgContent(){const friendChats=[{type:'friend',avatar:'张',name:'张明远',lastMsg:'好的，下周一下午两点实验室见！',time:'刚刚',unread:2},{type:'friend',avatar:'李',name:'李雨晴',lastMsg:'我把项目文档发你邮箱了，你看下有什么问题',time:'20分钟前',unread:0},{type:'friend',avatar:'陈',name:'陈浩然',lastMsg:'收到，我这就去修改UI设计稿',time:'1小时前',unread:1}];
+  const items=App.msgTab==='invite'?DATA.invites.filter(i=>i.type==='invite'):App.msgTab==='friend'?friendChats:App.msgTab==='system'?[{type:'system',title:'你的AI名片上架审核已通过',time:'2小时前'},{type:'system',title:'张浩然申请加入你的项目',time:'5小时前'},{type:'system',title:'匹配引擎已更新你的画像',time:'昨天'}]:App.msgTab==='ai'?[{type:'ai',msg:'为你匹配到3个高适配队友'},{type:'ai',msg:'你的项目还缺1名UI设计师'}]:[];const sm={pending:{c:'info',t:'待处理'},accepted:{c:'success',t:'已接受'},rejected:{c:'danger',t:'已拒绝'}};byId('msg-content').innerHTML=items.map(i=>{if(i.type==='invite'){const f=U(i.from),s=sm[i.status];return`<div class="card card--sm" data-action="view-project" data-id="${i.projectId}" style="display:flex;gap:10px;align-items:flex-start;padding:12px"><div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#E62080,#B80E60);color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600;flex-shrink:0">${f?f.avatar:'?'}</div><div style="flex:1;min-width:0"><div style="font-size:14px;font-weight:600">${f?f.name:'未知'} · ${i.role}</div><div style="font-size:12px;color:var(--txt2);margin-top:2px">${i.msg}</div><div class="flex-row gap-6 mt-4"><span class="tag tag--ai">${(DATA.projects.find(p=>p.id===i.projectId)||{}).name||'项目'}</span><span class="t-caption">${i.time}</span><span class="tag tag--status-${s.c}">${s.t}</span></div>${i.status==='pending'?`<div class="flex-row gap-6 mt-8"><button class="btn btn--primary btn--sm" data-action="accept-invite" data-id="${i.id}">接受</button><button class="btn btn--danger btn--sm" data-action="reject-invite" data-id="${i.id}">拒绝</button></div>`:''}</div></div>`}if(i.type==='friend'){return`<div class="card card--sm" style="display:flex;gap:10px;align-items:center;padding:12px;cursor:pointer"><div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#E62080,#B80E60);color:#fff;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:600;flex-shrink:0">${i.avatar}</div><div style="flex:1;min-width:0"><div style="display:flex;align-items:center;justify-content:space-between"><div style="font-size:14px;font-weight:600">${i.name}</div><span class="t-caption">${i.time}</span></div><div style="display:flex;align-items:center;justify-content:space-between;margin-top:3px"><div style="font-size:12px;color:var(--txt2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:200px">${i.lastMsg}</div>${i.unread>0?`<span style="background:var(--red);color:#fff;width:18px;height:18px;border-radius:50%;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">${i.unread}</span>`:''}</div></div></div>`}if(i.type==='system')return`<div class="card card--sm" style="display:flex;gap:10px;align-items:center;padding:12px"><img src="消息提醒图标.png" style="width:24px;height:24px;object-fit:contain"><div style="flex:1"><div style="font-size:13px;font-weight:600">${i.title}</div><div class="t-caption">${i.time}</div></div></div>`;if(i.type==='ai')return`<div class="card card--sm" style="display:flex;gap:10px;align-items:center;padding:12px"><img src="小荔图标.png" style="width:36px;height:36px;object-fit:contain;flex-shrink:0"><div style="flex:1"><div style="font-size:13px;font-weight:600">小荔</div><div style="font-size:12px;color:var(--txt2)">${i.msg}</div></div><button class="btn btn--primary btn--sm">查看</button></div>`;return''}).join('')}
+
+/* CHAT */
+const Chat={msgs:[],showingHistory:true};
+const chatHistory=[
+  {icon:'小荔',title:'生成我的名片',time:'昨天'},
+  {icon:'灵感',title:'创意项目找队友',time:'昨天'},
+  {icon:'文档',title:'优化邀请话术',time:'昨天'},
+  {icon:'文档',title:'项目需求拆解',time:'2天前'},
+  {icon:'警告',title:'团队诊断分析',time:'2天前'},
+  {icon:'灵感',title:'寻找UI设计师',time:'3天前'},
+  {icon:'小荔',title:'技术栈选型',time:'3天前'},
+  {icon:'灵感',title:'技能匹配推荐',time:'4天前'},
+  {icon:'技能',title:'小程序开发规划',time:'4天前'},
+  {icon:'技能',title:'大创项目组队',time:'5天前'}
+];
+function renderChatHistory(){const h=byId('chat-history-list');if(!h)return;h.innerHTML=chatHistory.map((item,idx)=>{let iconHtml='';if(item.icon==='小荔'){iconHtml='<img src="小荔图标.png" style="width:24px;height:24px;object-fit:contain">';}else if(item.icon==='灵感'){iconHtml='<img src="灵感图标.png" style="width:24px;height:24px;object-fit:contain">';}else if(item.icon==='文档'){iconHtml='<img src="文档图标.png" style="width:24px;height:24px;object-fit:contain">';}else if(item.icon==='警告'){iconHtml='<img src="警告图标.png" style="width:24px;height:24px;object-fit:contain">';}else if(item.icon==='技能'){iconHtml='<img src="技能图标.png" style="width:24px;height:24px;object-fit:contain">';}else{iconHtml=item.icon;}return`<div class="chat-history-item" data-action="load-history" data-idx="${idx}"><div class="chat-history-item__icon">${iconHtml}</div><div class="chat-history-item__title">${item.title}</div><div class="chat-history-item__time">${item.time}</div></div>`}).join('')}
+function renderChat(){const c=byId('chat-bubbles');if(!c)return;if(Chat.showingHistory&&!Chat.msgs.length){c.innerHTML='';byId('chat-history').style.display='block';renderChatHistory();return}else{byId('chat-history').style.display='none'}if(!Chat.msgs.length){c.innerHTML=`<div class="chat-bubble chat-bubble--ai" style="margin-top:8px"><img src="小荔图标.png" class="chat-bubble__avatar"><div class="chat-bubble__text">Hi！我是小荔，你的组队助手。我可以帮你找队友、写邀请话术、拆解项目需求和优化名片</div></div>`;return}c.innerHTML=Chat.msgs.map(m=>{if(m.role==='user')return`<div class="chat-bubble chat-bubble--user"><div class="chat-bubble__text">${m.content}</div></div>`;let t=m.content;if(m.rich==='teammates'){t+='<div style="display:flex;flex-direction:column;gap:6px;margin-top:8px">'+DATA.users.slice(1,4).map(u=>`<div style="display:flex;align-items:center;gap:8px;padding:8px;background:var(--bg);border-radius:10px"><div style="width:28px;height:28px;border-radius:50%;background:var(--red);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0">${u.avatar}</div><div style="flex:1"><div style="font-size:12px;font-weight:600">${u.name}</div><div style="font-size:10px;color:var(--txt3)">${u.role}</div></div><span style="font-size:13px;color:var(--red);font-weight:700">${78+Math.floor(Math.random()*18)}%</span></div>`).join('')+'</div>'}return`<div class="chat-bubble chat-bubble--ai"><img src="小荔图标.png" class="chat-bubble__avatar"><div class="chat-bubble__text">${t}</div></div>`}).join('');setTimeout(()=>{c.scrollTop=c.scrollHeight},100)}
+function loadHistoryChat(idx){Chat.showingHistory=false;const historyMsgs={
+  0:[{role:'user',content:'帮我生成AI名片'},{role:'ai',content:'好的！正在为你生成专属AI名片...'},],
+  1:[{role:'user',content:'我要参加创意项目，帮我找队友'},{role:'ai',content:'太棒了！创意项目是很好的锻炼机会。让我帮你找合适的队友...'},],
+  2:[{role:'user',content:'帮我优化一下邀请话术'},{role:'ai',content:'没问题！让我帮你写一个更有吸引力的组队邀请...'},],
+  3:[{role:'user',content:'帮我拆解一下这个项目需求'},{role:'ai',content:'没问题！我们来一起分析这个项目的需求...'},],
+  4:[{role:'user',content:'帮我做一下团队诊断'},{role:'ai',content:'好的！让我分析一下你的团队配置...'},],
+  5:[{role:'user',content:'我想找个UI设计师'},{role:'ai',content:'好的！让我帮你推荐几位优秀的UI设计师...'},],
+  6:[{role:'user',content:'AI技术栈选什么比较好？'},{role:'ai',content:'这个问题很好！让我帮你分析一下适合你的AI技术栈...'},],
+  7:[{role:'user',content:'帮我匹配一下技能相似的人'},{role:'ai',content:'好的！让我看看你的技能，推荐最合适的队友...'},],
+  8:[{role:'user',content:'想做个小程序开发'},{role:'ai',content:'很好的想法！让我们来规划一下小程序开发的技术方案...'},],
+  9:[{role:'user',content:'想组队做大创项目'},{role:'ai',content:'大创项目很有意义！让我帮你组建一个完美的团队...'},]
+};Chat.msgs=historyMsgs[idx]||[];renderChat()}
+async function chatSend(msg){Chat.showingHistory=false;const input=byId('chat-input');const text=msg||input.value.trim();if(!text)return;Chat.msgs.push({role:'user',content:text});if(input)input.value='';renderChat();Chat.msgs.push({role:'ai',content:'<div class="chat-loading"><span></span><span></span><span></span></div>',_loading:true});renderChat();await delay(1000+Math.random()*600);Chat.msgs=Chat.msgs.filter(m=>!m._loading);let resp,rich;if(text.includes('找队友')||text.includes('匹配')){resp='为你匹配到以下高适配队友：';rich='teammates'}else if(text.includes('话术')||text.includes('邀请')){resp='为你生成组队邀请话术：「Hi！看到你的技能画像和我们的项目高度匹配，期待与你沟通！」<br><button class="btn btn--primary btn--sm mt-8" data-action="copy-text">复制话术</button>'}else if(text.includes('拆解')||text.includes('项目需求')){resp='建议团队配置：<br>✓ 产品经理 ×1<br>✓ 前端开发 ×1<br>✓ 后端开发 ×1<br>✓ UI设计师 ×1<br>✓ AI工程师 ×1'}else if(text.includes('名片')||text.includes('优化')){resp='已分析你的技能画像：<br><img src="灵感图标.png" style="width:16px;height:16px;object-fit:contain;display:inline-block;vertical-align:middle"> 推荐角色：前端开发/全栈工程师<br><img src="技能图标.png" style="width:16px;height:16px;object-fit:contain;display:inline-block;vertical-align:middle"> 优势标签：React、Node.js、UI设计<br><img src="灵感图标.png" style="width:16px;height:16px;object-fit:contain;display:inline-block;vertical-align:middle"> 建议添加GitHub链接和获奖经历'}else if(text.includes('诊断')){resp='团队诊断结果：<br><img src="组队图标.png" style="width:16px;height:16px;object-fit:contain;display:inline-block;vertical-align:middle"> 优势：前端/后端/产品齐备<br><img src="警告图标.png" style="width:16px;height:16px;object-fit:contain;display:inline-block;vertical-align:middle"> 风险：缺少AI工程师<br><img src="灵感图标.png" style="width:16px;height:16px;object-fit:contain;display:inline-block;vertical-align:middle"> 优先招募1名AI工程师'}else{resp='收到！建议你先完善个人名片，让系统更精准匹配队友。你也可以在广场浏览正在招募的项目'}Chat.msgs.push({role:'ai',content:resp,rich});renderChat()}
+
+/* PROFILE */
+function renderProfile(){const u=App.user;byId('pf-avatar').textContent=u.avatar;byId('pf-name').textContent=u.name;byId('pf-college').textContent=u.college+' · '+u.year;byId('pf-bio').textContent=u.bio;byId('pf-tags').innerHTML=tagsHTML([u.role,...u.skills.slice(0,3)])}
+
+/* DRAWER */
+function openDrawer(){byId('drawer-users').innerHTML=DATA.users.slice(0,4).map(u=>`<div style="display:flex;align-items:center;gap:10px;padding:10px;border-radius:12px;cursor:pointer;border:2px solid ${u.id===App.user.id?'var(--red)':'transparent'};background:${u.id===App.user.id?'var(--red-light)':'transparent'}" data-action="switch-user" data-id="${u.id}"><div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#E62080,#B80E60);color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600">${u.avatar}</div><div><div style="font-size:14px;font-weight:600">${u.name}</div><div style="font-size:11px;color:var(--txt3)">${u.college} · ${u.year}</div></div>${u.id===App.user.id?'<span style="font-size:11px;color:var(--red);font-weight:600;margin-left:auto">当前</span>':''}</div>`).join('');byId('drawer-overlay').style.opacity='1';byId('drawer-overlay').style.pointerEvents='auto';byId('drawer').style.transform='translateX(-50%) translateY(0)'}
+function closeDrawer(){byId('drawer-overlay').style.opacity='0';byId('drawer-overlay').style.pointerEvents='none';byId('drawer').style.transform='translateX(-50%) translateY(100%)'}
+function showCardDetail(uid){const u=U(uid);if(!u)return;byId('cd-name').textContent=u.name;byId('cd-avatar').textContent=u.avatar;byId('cd-fullname').textContent=u.name;byId('cd-college').textContent=u.college+' · '+u.year;byId('cd-bio').textContent=u.bio;byId('cd-tags').innerHTML=tagsHTML([u.role,...u.skills.slice(0,3)]);byId('cd-info').innerHTML=`<div style="font-size:14px;font-weight:600;margin-bottom:8px"><img src="文档图标.png" style="width:16px;height:16px;object-fit:contain;display:inline-block;vertical-align:middle;margin-right:6px"> 详细信息</div><div class="flex-row" style="justify-content:space-between;padding:6px 0"><span class="t-caption">状态</span><span class="tag tag--status-${u.status==='available'?'success':'neutral'}">${u.status==='available'?'可组队':'已有队伍'}</span></div><div class="flex-row" style="justify-content:space-between;padding:6px 0"><span class="t-caption">学校</span><span style="font-size:13px">${u.college}</span></div><div class="flex-row" style="justify-content:space-between;padding:6px 0"><span class="t-caption">年级</span><span style="font-size:13px">${u.year}</span></div><div class="flex-row" style="justify-content:space-between;padding:6px 0"><span class="t-caption">匹配度</span><span style="font-size:13px;color:var(--red);font-weight:700">${78+Math.floor(Math.random()*18)}%</span></div>`;byId('cd-invite-btn').onclick=()=>{toast('<img src="组队图标.png" style="width:14px;height:14px;object-fit:contain;display:inline-block;vertical-align:middle;margin-right:4px"> 已向 '+u.name+' 发送组队邀请')};$$('.page').forEach(p=>p.classList.remove('page--active'));byId('page-card-detail').classList.add('page--active');byId('tabbar').style.display='none';byId('explore-fabs').classList.remove('page-explore-active')}
+function showProjectDetail(pid){const p=DATA.projects.find(x=>x.id===pid);if(!p)return;const c=U(p.creator);byId('pd-name').textContent=p.name;byId('pd-content').innerHTML=`<div class="card" style="display:flex;flex-direction:column;gap:12px"><div class="flex-between"><span style="font-size:17px;font-weight:700">${p.name}</span><span class="tag tag--status-info">${p.status==='recruiting'?'招募中':'已满员'}</span></div><span class="tag tag--ai">${p.type}</span><p class="t-body">${p.brief}</p><div class="flex-row" style="justify-content:space-between"><span class="t-caption">创建者：${c?c.name:'未知'} · ${c?c.college:''}</span><span class="t-caption">需 ${p.count} 人</span></div></div><div class="card"><div style="font-size:14px;font-weight:600;margin-bottom:8px"><img src="警告图标.png" style="width:16px;height:16px;object-fit:contain;display:inline-block;vertical-align:middle;margin-right:6px"> 角色缺口</div><div class="flex-row">${p.needs.map(r=>`<span class="tag tag--status-warning">缺：${r}</span>`).join('')}</div><div style="margin-top:8px;display:flex;align-items:center;gap:8px"><span class="t-caption">当前进度：</span><div style="flex:1;height:6px;background:var(--border);border-radius:3px;overflow:hidden"><div style="height:100%;width:${Math.floor(Math.random()*40+30)}%;background:var(--red);border-radius:3px"></div></div><span class="t-caption">${p.count+1}/${p.count+2}人</span></div></div><div class="ai-insight"><div style="font-size:14px;font-weight:600;margin-bottom:6px"><img src="小荔图标.png" style="width:20px;height:20px;object-fit:contain;display:inline-block;vertical-align:middle;margin-right:6px"> AI 分析</div><p class="t-body" style="font-size:12px">${p.status==='recruiting'?'该项目角色缺口明确，建议优先招募 '+p.needs[0]+'，当前平台有 '+(5+Math.floor(Math.random()*10))+' 位匹配候选人':'团队已满员，建议进行一次团队诊断确保角色互补'}</p></div><button class="btn btn--primary btn--block mt-4">${App.user.id===p.creator?'<img src="小荔图标.png" style="width:16px;height:16px;object-fit:contain;display:inline-block;vertical-align:middle;margin-right:4px"> 匹配队友':'申请加入'}</button>`;$$('.page').forEach(p=>p.classList.remove('page--active'));byId('page-project-detail').classList.add('page--active');byId('tabbar').style.display='none';byId('explore-fabs').classList.remove('page-explore-active')}
+
+/* EVENTS */
+document.body.addEventListener('click',async e=>{const el=e.target.closest('[data-action]');if(!el)return;const a=el.dataset.action,id=el.dataset.id;
+  if(a==='nav:home')navigate('home');else if(a==='nav:explore')navigate('explore');else if(a==='nav:ai-chat'){Chat.msgs=[];Chat.showingHistory=true;navigate('ai-chat');renderChat()}else if(a==='nav:messages')navigate('messages');else if(a==='nav:profile')navigate('profile');else if(a==='go-back')navigate('home');
+  else if(a==='explore-tab'){App.exploreTab=el.dataset.tab;$$('#explore-tabs .seg-control__tab').forEach(t=>t.classList.remove('seg-control__tab--active'));el.classList.add('seg-control__tab--active');byId('explore-cards').style.display=App.exploreTab==='cards'?'block':'none';byId('explore-projects').style.display=App.exploreTab==='projects'?'block':'none';byId('fab-card').style.display=App.exploreTab==='cards'?'inline-flex':'none';byId('fab-project').style.display=App.exploreTab==='projects'?'inline-flex':'none';renderExplore()}
+  else if(a==='search-filter'){const f=el.dataset.filter;if(el.classList.contains('filter-chip')){const row=el.parentElement;row.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('filter-chip--active'));el.classList.add('filter-chip--active')}if(el.closest('#card-filters')){App.cardFilter=f||'all';renderCards()}else if(el.closest('#project-filters')){App.projectFilter=f||'all';renderProjects()}}
+  else if(a==='view-card'){showCardDetail(id)}
+  else if(a==='view-project'){showProjectDetail(id)}
+  else if(a==='close-detail'){navigate(App.prev&&tabs.includes(App.prev)?App.prev:'home')}
+  else if(a==='invite-user')toast('<img src="组队图标.png" style="width:14px;height:14px;object-fit:contain;display:inline-block;vertical-align:middle;margin-right:4px"> 已发送组队邀请');
+  else if(a==='msg-circle'){App.msgTab=el.dataset.tab;$$('.msg-circle').forEach(c=>c.classList.remove('msg-circle--active'));el.classList.add('msg-circle--active');renderMsgContent()}
+  else if(a==='accept-invite'){const i=DATA.invites.find(x=>x.id===id);if(i){i.status='accepted';renderMsgContent();toast('已接受')}}
+  else if(a==='reject-invite'){const i=DATA.invites.find(x=>x.id===id);if(i){i.status='rejected';renderMsgContent();toast('已拒绝')}}
+  else if(a==='chat-send')chatSend();else if(a==='chat-quick')chatSend(el.dataset.msg);else if(a==='copy-text')toast('已复制');else if(a==='voice-input')toast('语音输入启动');
+  else if(a==='load-history')loadHistoryChat(parseInt(el.dataset.idx));
+  else if(a==='switch-home-user')switchHomeUser();
+  else if(a==='open-user-drawer')openDrawer();else if(a==='close-drawer')closeDrawer();
+  else if(a==='switch-user'){const nu=U(id);if(nu){App.user=nu;closeDrawer();renderHome();renderProfile();toast('已切换至 '+nu.name)}}
+  else if(a==='go-create-card')toast('<img src="小荔图标.png" style="width:14px;height:14px;object-fit:contain;display:inline-block;vertical-align:middle;margin-right:4px"> 创建名片');else if(a==='go-create-project')toast('发布项目');
+  else if(a.startsWith('nav:')){toast('页面开发中')}});
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&document.activeElement===byId('chat-input')){e.preventDefault();chatSend()}});
+(function(){renderHome();console.log('🧠 TeamCard AI · 小荔 · 按UI草稿重建')})();
+</script></body></html>
+
+
